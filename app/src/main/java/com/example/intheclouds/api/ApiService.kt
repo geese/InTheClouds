@@ -8,7 +8,6 @@ import retrofit2.http.Query
 
 interface ApiService {
 
-    //@GET("?key=${Constants.PIXABAY_API_KEY}&q=cumulus&image_type=photo")
     @GET("api")
     fun getCumulusPhotos(
         @Query("key") key: String = Constants.PIXABAY_API_KEY,
@@ -16,5 +15,4 @@ interface ApiService {
         @Query("image_type") imageType: String = "photo",
         @Query("per_page") perPage: Int = 200
     ): Call<Cumulus.Response>
-
 }

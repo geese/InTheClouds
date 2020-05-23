@@ -1,5 +1,9 @@
 package com.example.intheclouds.ui.choosecloud
 
+/**
+ * This is from the article here:  https://www.raywenderlich.com/272-intermediate-recyclerview-tutorial-with-kotlin
+ */
+
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView

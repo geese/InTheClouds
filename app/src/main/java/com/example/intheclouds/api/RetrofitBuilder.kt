@@ -22,5 +22,4 @@ object RetrofitBuilder { //singleton
     }
 
     fun getCumulusPhotos() : Call<Cumulus.Response> = apiService.getCumulusPhotos()
-
 }

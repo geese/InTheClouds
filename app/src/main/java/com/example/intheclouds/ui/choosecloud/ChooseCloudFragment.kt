@@ -1,27 +1,43 @@
 package com.example.intheclouds.ui.choosecloud
 
-import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+
 import com.example.intheclouds.R
 import com.example.intheclouds.api.RetrofitBuilder
 import com.example.intheclouds.model.Cumulus
-import kotlinx.android.synthetic.main.activity_edit_cloud.*
+import kotlinx.android.synthetic.main.choose_cloud_fragment.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-private const val TAG = "ChooseCloud"
+class ChooseCloudFragment : Fragment() {
 
-class ChooseCloudActivity : AppCompatActivity() {
+    companion object {
+        fun newInstance() = ChooseCloudFragment()
+    }
 
+    private lateinit var viewModel: ChooseCloudViewModel
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_edit_cloud)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.choose_cloud_fragment, container, false)
+    }
 
-        var layoutManager = LinearLayoutManager(this)
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        viewModel = ViewModelProviders.of(this).get(ChooseCloudViewModel::class.java)
+        // TODO: Use the ViewModel
+
+        var layoutManager = LinearLayoutManager(context)
         layoutManager.orientation = RecyclerView.VERTICAL
         cloudsRecyclerView.layoutManager = layoutManager
 
