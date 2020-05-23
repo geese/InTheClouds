@@ -24,14 +24,14 @@ class ChooseCloudViewModel : ViewModel() {
         get() = _viewState
 
     // listen to state events - when one is detected, handle it and return LiveData accordingly
-    val dataState: LiveData<ChooseCloudViewState> = Transformations
+    val dataState: LiveData<DataState<ChooseCloudViewState>> = Transformations
         .switchMap(_stateEvent){ stateEvent ->
             stateEvent?.let {
                 handleStateEvent(stateEvent)
             }
         }
 
-    fun handleStateEvent(stateEvent: ChooseCloudStateEvent): LiveData<ChooseCloudViewState>{
+    fun handleStateEvent(stateEvent: ChooseCloudStateEvent): LiveData<DataState<ChooseCloudViewState>>{
         println("DEBUG: New StateEvent detected: $stateEvent")
         when(stateEvent){
 

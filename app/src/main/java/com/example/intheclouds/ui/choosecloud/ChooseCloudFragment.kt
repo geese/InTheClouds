@@ -49,11 +49,27 @@ class ChooseCloudFragment : Fragment() {
     }
 
     fun subscribeObservers() {
+
         viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
+
             println("DEBUG: DataState: $dataState")
-            dataState.cloudImages?.let { clouds ->
-                // set CloudImages data
-                viewModel.setCloudImagesListData(clouds)
+
+            // Handle Data<T>
+            dataState.data?.let { chooseCloudViewState ->
+                chooseCloudViewState.cloudImages?.let { clouds ->
+                    // set CloudImages data
+                    viewModel.setCloudImagesListData(clouds)
+                }
+            }
+
+            // Handle (Error) message?
+            dataState.message?.let {
+                println("DEBUG: ERROR MESSAGE: $it")
+            }
+
+            // Handle Progress bar?
+            dataState.loading.let{
+                println("DEBUG: LOADING: ${it}")
             }
         })
 

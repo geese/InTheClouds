@@ -1,10 +1,11 @@
 package com.example.intheclouds.util
 
+// this class is modeled after a class named Resource in Google samples
 
 data class DataState<T>(
-    var message: Event<String>? = null,
+    var message: String? = null,
     var loading: Boolean = false,
-    var data: Event<T>? = null
+    var data: T? = null
 )
 {
     companion object {
@@ -13,7 +14,7 @@ data class DataState<T>(
             message: String
         ): DataState<T> {
             return DataState(
-                message = Event(message),
+                message = message,
                 loading = false,
                 data = null
             )
@@ -34,14 +35,14 @@ data class DataState<T>(
             data: T? = null
         ): DataState<T> {
             return DataState(
-                message = Event.messageEvent(message),
+                message = message,
                 loading = false,
-                data = Event.dataEvent(data)
+                data = data
             )
         }
     }
 
     override fun toString(): String {
-        return "DataState(message=$message,loading=$loading,data=$data)"
+        return "DataState(\nmessage=$message,\n loading=$loading,\n data=$data)"
     }
 }

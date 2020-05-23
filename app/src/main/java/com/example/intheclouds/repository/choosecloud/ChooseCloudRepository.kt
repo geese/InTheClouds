@@ -8,34 +8,41 @@ import com.example.intheclouds.ui.choosecloud.state.ChooseCloudViewState
 import com.example.intheclouds.util.ApiEmptyResponse
 import com.example.intheclouds.util.ApiErrorResponse
 import com.example.intheclouds.util.ApiSuccessResponse
+import com.example.intheclouds.util.DataState
 
 object ChooseCloudRepository {
 
-    fun getCloudImages(): LiveData<ChooseCloudViewState> {
+    fun getCloudImages(): LiveData<DataState<ChooseCloudViewState>> {
 
         // TEMPORARY !! just to get the ball rolling
 
         return Transformations
             .switchMap(MitchRetrofitBuilder.apiService.getCumulusPhotos()) { apiResponse ->
-                object: LiveData<ChooseCloudViewState>(){
+                object: LiveData<DataState<ChooseCloudViewState>>(){
                     override fun onActive() {
                         super.onActive()
                         when(apiResponse) {
 
                             is ApiSuccessResponse -> {
-                                value = ChooseCloudViewState(
-                                    cloudImages = apiResponse.body.cloudImages as ArrayList<Cumulus.CloudImage>
+                                value = DataState.data(
+                                    message = null,
+                                    data = ChooseCloudViewState(
+                                        cloudImages = apiResponse.body.cloudImages as ArrayList<Cumulus.CloudImage>
+                                    )
                                 )
                             }
 
                             is ApiErrorResponse -> {
-                                value = ChooseCloudViewState()  // handle error?
+                                value = DataState.error(
+                                    message = apiResponse.errorMessage
+                                )
                             }
 
                             is ApiEmptyResponse -> {
-                                value = ChooseCloudViewState() // handle empty/error?
+                                value = DataState.error(
+                                    message = "HTTP 204. Returned NOTHING!!"
+                                )
                             }
-
                         }
                     }
                 }
