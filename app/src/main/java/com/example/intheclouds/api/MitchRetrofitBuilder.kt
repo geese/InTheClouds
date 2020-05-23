@@ -17,7 +17,7 @@ object MitchRetrofitBuilder {
     }
 
     val apiService: MitchApiService by lazy{
-        RetrofitBuilder.retrofitBuilder
+        retrofitBuilder
             .build()
             .create(MitchApiService::class.java)
     }

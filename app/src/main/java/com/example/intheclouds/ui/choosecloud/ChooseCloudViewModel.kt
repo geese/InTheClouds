@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.example.intheclouds.model.Cumulus
+import com.example.intheclouds.repository.choosecloud.ChooseCloudRepository
 import com.example.intheclouds.ui.choosecloud.state.ChooseCloudStateEvent
 import com.example.intheclouds.ui.choosecloud.state.ChooseCloudViewState
 import com.example.intheclouds.util.AbsentLiveData
@@ -36,21 +37,8 @@ class ChooseCloudViewModel : ViewModel() {
 
             is ChooseCloudStateEvent.getCloudImages -> {
 
-                // TEMPORARY!!  just to build this whole thing incrementally and see progress
-
                 println("DEBUG: getting cloud images")
-                return object: LiveData<ChooseCloudViewState>() {
-                    override fun onActive() {
-                        super.onActive()
-                        val clouds: ArrayList<Cumulus.CloudImage> = ArrayList()
-                        clouds.add(
-                            Cumulus.CloudImage(
-                                url = "https://pixabay.com/get/55e3d6464f5aa914f1dc8460962931781c3edeec504c704c7c2f7ad39049c459_640.jpg"
-                            )
-                        )
-                        value = ChooseCloudViewState(cloudImages = clouds)
-                    }
-                }
+                return ChooseCloudRepository.getCloudImages()
             }
 
             is ChooseCloudStateEvent.clickCloudImage -> {

@@ -2,6 +2,7 @@ package com.codingwithmitch.mviexample.util
 
 
 import androidx.lifecycle.LiveData
+import com.example.intheclouds.util.GenericApiResponse
 import retrofit2.CallAdapter
 import retrofit2.CallAdapter.Factory
 import retrofit2.Retrofit
