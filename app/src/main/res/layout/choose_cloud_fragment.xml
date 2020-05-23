@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.MainActivity">
+    tools:context=".ui.choosecloud.ChooseCloudActivity">
 
-    <FrameLayout
-        android:id="@+id/fragment_container"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/cloudsRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
