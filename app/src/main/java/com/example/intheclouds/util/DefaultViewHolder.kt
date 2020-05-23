@@ -1,4 +1,4 @@
-package com.example.intheclouds.ui.choosecloud
+package com.example.intheclouds.util
 
 /**
  * This is from the article here:  https://www.raywenderlich.com/272-intermediate-recyclerview-tutorial-with-kotlin

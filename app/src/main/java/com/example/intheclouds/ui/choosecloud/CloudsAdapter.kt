@@ -6,13 +6,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.intheclouds.R
 import com.example.intheclouds.model.Cumulus
+import com.example.intheclouds.util.DefaultViewHolder
 
 class CloudsAdapter(private var cloudList: ArrayList<Cumulus.CloudImage>)
     :RecyclerView.Adapter<DefaultViewHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DefaultViewHolder {
-        return DefaultViewHolder(LayoutInflater.from(parent.context)
-            .inflate(R.layout.cloud_row_item, parent, false))
+        return DefaultViewHolder(
+            LayoutInflater.from(parent.context)
+                .inflate(R.layout.cloud_row_item, parent, false)
+        )
     }
 
     override fun getItemCount(): Int {
