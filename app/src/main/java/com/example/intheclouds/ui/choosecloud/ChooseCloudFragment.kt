@@ -63,10 +63,12 @@ class ChooseCloudFragment : Fragment() {
             dataStateHandler.onDataStateChange(dataState)
 
             // Handle Data<T>
-            dataState.data?.let { chooseCloudViewState ->
-                chooseCloudViewState.cloudImages?.let { clouds ->
-                    // set CloudImages data
-                    viewModel.setCloudImagesListData(clouds)
+            dataState.data?.let { event ->
+                event.getContentIfNotHandled()?.let { chooseCloudViewState ->
+                    chooseCloudViewState.cloudImages?.let { clouds ->
+                        // set CloudImages data
+                        viewModel.setCloudImagesListData(clouds)
+                    }
                 }
             }
         })
