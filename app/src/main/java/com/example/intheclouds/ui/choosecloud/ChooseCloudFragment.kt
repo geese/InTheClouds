@@ -19,11 +19,13 @@ class ChooseCloudFragment : Fragment(), CloudsRecyclerAdapter.Interaction {
 
     override fun onItemSelected(position: Int, item: Cumulus.CloudImage) {
         println("DEBUG: CLICKED :: position: $position, item: $item")
+        triggerCloudClickedEvent(item.id, item.url)
     }
 
     lateinit var viewModel: ChooseCloudViewModel
 
     lateinit var dataStateHandler: DataStateListener
+    lateinit var chooseCloudFragmentListener: ChooseCloudFragmentListener
 
     lateinit var cloudsRecyclerAdapter: CloudsRecyclerAdapter
 
@@ -77,6 +79,10 @@ class ChooseCloudFragment : Fragment(), CloudsRecyclerAdapter.Interaction {
                         // set CloudImages data
                         viewModel.setCloudImagesListData(clouds)
                     }
+                    chooseCloudViewState.editCloud?.let {
+                        println("DEBUG: Sending cloud click to MainActivity")
+                        chooseCloudFragmentListener.onCloudClicked(chooseCloudViewState.editCloud.first, chooseCloudViewState.editCloud.second)
+                    }
                 }
             }
         })
@@ -91,6 +97,10 @@ class ChooseCloudFragment : Fragment(), CloudsRecyclerAdapter.Interaction {
 
     fun triggerLoadCloudsEvent() {
         viewModel.setStateEvent(ChooseCloudStateEvent.getCloudImages())
+    }
+
+    fun triggerCloudClickedEvent(id: Long?, url: String?) {
+        viewModel.setStateEvent(ChooseCloudStateEvent.clickCloudImage(id, url))
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -109,9 +119,14 @@ class ChooseCloudFragment : Fragment(), CloudsRecyclerAdapter.Interaction {
         super.onAttach(context)
         try {
             dataStateHandler = context as DataStateListener
+            chooseCloudFragmentListener = context as ChooseCloudFragmentListener
         } catch (e: ClassCastException) {
-            println("DEBUG: $context must implement DataStateListener")
+            println("DEBUG: ${e.message}")
         }
+    }
+
+    interface ChooseCloudFragmentListener {
+        fun onCloudClicked(id: Long? = null, url: String? = null)
     }
 
     companion object {

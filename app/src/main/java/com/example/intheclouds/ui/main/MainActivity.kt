@@ -1,4 +1,4 @@
-package com.example.intheclouds.ui
+package com.example.intheclouds.ui.main
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -6,11 +6,15 @@ import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.example.intheclouds.R
+import com.example.intheclouds.ui.DataStateListener
 import com.example.intheclouds.ui.choosecloud.*
+import com.example.intheclouds.ui.choosecloud.ChooseCloudFragment.ChooseCloudFragmentListener
+import com.example.intheclouds.ui.editcloud.EditCloudFragment
 import com.example.intheclouds.util.DataState
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(), DataStateListener {
+class MainActivity : AppCompatActivity(),
+    DataStateListener, ChooseCloudFragmentListener {
 
     lateinit var chooseCloudViewModel: ChooseCloudViewModel
 
@@ -21,6 +25,12 @@ class MainActivity : AppCompatActivity(), DataStateListener {
         chooseCloudViewModel = ViewModelProvider(this).get(ChooseCloudViewModel::class.java)
 
         showChooseCloudFragment()
+    }
+
+    override fun onCloudClicked(id: Long?, url: String?) {
+        if (id != null && url != null) {
+            showEditCloudFragment(id, url)
+        }
     }
 
     override fun onDataStateChange(dataState: DataState<*>?) {
@@ -58,6 +68,12 @@ class MainActivity : AppCompatActivity(), DataStateListener {
     private fun showChooseCloudFragment() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, ChooseCloudFragment.newInstance())
+            .commit()
+    }
+
+    private fun showEditCloudFragment(id: Long, url: String) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, EditCloudFragment.newInstance(id, url))
             .commit()
     }
 }

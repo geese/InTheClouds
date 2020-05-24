@@ -7,5 +7,6 @@ import com.example.intheclouds.model.Cumulus
  * all the  data objects in the View.
  */
 data class ChooseCloudViewState (
-    var cloudImages: ArrayList<Cumulus.CloudImage>? = null
+    var cloudImages: ArrayList<Cumulus.CloudImage>? = null,
+    val editCloud: Pair<Long?, String?>? = null
 )

@@ -1,10 +1,7 @@
 package com.example.intheclouds.ui.choosecloud
 
 import android.widget.Toast
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.example.intheclouds.model.Cumulus
 import com.example.intheclouds.repository.choosecloud.ChooseCloudRepository
 import com.example.intheclouds.ui.choosecloud.state.ChooseCloudStateEvent
@@ -42,7 +39,16 @@ class ChooseCloudViewModel : ViewModel() {
             }
 
             is ChooseCloudStateEvent.clickCloudImage -> {
-                return AbsentLiveData.create()
+                println("DEBUG: cloud clicked")
+                var viewState = ChooseCloudViewState(
+                    editCloud = Pair(stateEvent.id, stateEvent.url)
+                )
+                var dataState = DataState.data(
+                    data = viewState
+                )
+                var result = MediatorLiveData<DataState<ChooseCloudViewState>>()
+                result.postValue(dataState)
+                return result
             }
 
             is ChooseCloudStateEvent.None ->{
