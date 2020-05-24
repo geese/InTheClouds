@@ -1,11 +1,11 @@
 package com.example.intheclouds.api
 
-import com.example.intheclouds.model.Cumulus
-import retrofit2.Call
+import com.codingwithmitch.mviexample.util.LiveDataCallAdapterFactory
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-object RetrofitBuilder { //singleton
+// "object" makes it a Singleton
+object RetrofitBuilder {
 
     const val BASE_URL: String = "https://pixabay.com/"
 
@@ -13,6 +13,7 @@ object RetrofitBuilder { //singleton
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(LiveDataCallAdapterFactory())
     }
 
     val apiService: ApiService by lazy{
@@ -20,6 +21,4 @@ object RetrofitBuilder { //singleton
             .build()
             .create(ApiService::class.java)
     }
-
-    fun getCumulusPhotos() : Call<Cumulus.Response> = apiService.getCumulusPhotos()
 }

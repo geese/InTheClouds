@@ -1,6 +1,6 @@
 package com.example.intheclouds.ui.choosecloud
 
-import androidx.lifecycle.ViewModelProviders
+import android.content.Context
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
@@ -12,15 +12,19 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.intheclouds.R
 import com.example.intheclouds.api.RetrofitBuilder
 import com.example.intheclouds.model.Cumulus
+import com.example.intheclouds.ui.DataStateListener
 import com.example.intheclouds.ui.choosecloud.state.ChooseCloudStateEvent
 import kotlinx.android.synthetic.main.choose_cloud_fragment.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.lang.ClassCastException
 
 class ChooseCloudFragment : Fragment() {
 
     private lateinit var viewModel: ChooseCloudViewModel
+
+    lateinit var dataStateHandler: DataStateListener
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,12 +35,12 @@ class ChooseCloudFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(ChooseCloudViewModel::class.java)
-        // TODO: Use the ViewModel
 
-        var layoutManager = LinearLayoutManager(context)
-        layoutManager.orientation = RecyclerView.VERTICAL
-        cloudsRecyclerView.layoutManager = layoutManager
+        viewModel = activity?.run {
+            ViewModelProvider(this).get(ChooseCloudViewModel::class.java)
+        }?: throw Exception("Invalid Activity")
+
+        cloudsRecyclerView.layoutManager = LinearLayoutManager(context)
 
         subscribeObservers()
 
@@ -54,22 +58,16 @@ class ChooseCloudFragment : Fragment() {
 
             println("DEBUG: DataState: $dataState")
 
+            // dataStateHandler is the MainActivity implementing DataStateListener
+            // to handle loading (progress bar) or error (showing message)
+            dataStateHandler.onDataStateChange(dataState)
+
             // Handle Data<T>
             dataState.data?.let { chooseCloudViewState ->
                 chooseCloudViewState.cloudImages?.let { clouds ->
                     // set CloudImages data
                     viewModel.setCloudImagesListData(clouds)
                 }
-            }
-
-            // Handle (Error) message?
-            dataState.message?.let {
-                println("DEBUG: ERROR MESSAGE: $it")
-            }
-
-            // Handle Progress bar?
-            dataState.loading.let{
-                println("DEBUG: LOADING: ${it}")
             }
         })
 
@@ -84,7 +82,7 @@ class ChooseCloudFragment : Fragment() {
         viewModel.setStateEvent(ChooseCloudStateEvent.getCloudImages())
     }
 
-    fun loadCloudImages() {
+    /*fun loadCloudImages() {
 
         RetrofitBuilder.getCumulusPhotos().enqueue(object: Callback<Cumulus.Response> {
 
@@ -108,7 +106,7 @@ class ChooseCloudFragment : Fragment() {
                 }
             }
         })
-    }
+    }*/
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
@@ -120,6 +118,15 @@ class ChooseCloudFragment : Fragment() {
             R.id.action_get_clouds -> triggerLoadCloudsEvent()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        try {
+            dataStateHandler = context as DataStateListener
+        } catch (e: ClassCastException) {
+            println("DEBUG: $context must implement DataStateListener")
+        }
     }
 
     companion object {

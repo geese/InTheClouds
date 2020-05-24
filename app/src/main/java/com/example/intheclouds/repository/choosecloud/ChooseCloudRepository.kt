@@ -1,7 +1,7 @@
 package com.example.intheclouds.repository.choosecloud
 
 import androidx.lifecycle.LiveData
-import com.example.intheclouds.api.MitchRetrofitBuilder
+import com.example.intheclouds.api.RetrofitBuilder
 import com.example.intheclouds.model.Cumulus
 import com.example.intheclouds.repository.NetworkBoundResource
 import com.example.intheclouds.ui.choosecloud.state.ChooseCloudViewState
@@ -21,7 +21,7 @@ object ChooseCloudRepository {
             }
 
             override fun createCall(): LiveData<GenericApiResponse<Cumulus.Response>> {
-                return MitchRetrofitBuilder.apiService.getCumulusPhotos()
+                return RetrofitBuilder.apiService.getCumulusPhotos()
             }
         }.asLiveData()
     }
