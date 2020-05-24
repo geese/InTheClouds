@@ -28,9 +28,9 @@ class MainActivity : AppCompatActivity(),
         showChooseCloudFragment()
     }
 
-    override fun onCloudClicked(bitmap: Bitmap?, url: String?) {
-        if (bitmap != null && url != null) {
-            showEditCloudFragment(bitmap, url)
+    override fun onCloudClicked(encodedBitmap: String?, url: String?) {
+        if (encodedBitmap != null && url != null) {
+            showEditCloudFragment(encodedBitmap, url)
         }
     }
 
@@ -72,9 +72,9 @@ class MainActivity : AppCompatActivity(),
             .commit()
     }
 
-    private fun showEditCloudFragment(bitmap: Bitmap, url: String) {
+    private fun showEditCloudFragment(encodedBitmap: String, url: String) {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, EditCloudFragment.newInstance(bitmap, url))
+            .replace(R.id.fragment_container, EditCloudFragment.newInstance(encodedBitmap, url))
             .addToBackStack("edit_cloud")
             .commit()
     }

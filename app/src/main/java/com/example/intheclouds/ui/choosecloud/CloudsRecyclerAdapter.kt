@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.intheclouds.R
 import com.example.intheclouds.model.Cumulus
+import com.example.intheclouds.util.getBase64String
 import kotlinx.android.synthetic.main.cloud_row_item.view.*
 
 class CloudsRecyclerAdapter(private val interaction: Interaction? = null) :
@@ -70,17 +71,17 @@ class CloudsRecyclerAdapter(private val interaction: Interaction? = null) :
                 var bitmap = ((itemView.findViewById(R.id.image_view) as ImageView)
                     .drawable as BitmapDrawable)
                     .bitmap
-                interaction?.onItemSelected(adapterPosition, item, bitmap)
+                interaction?.onItemSelected(adapterPosition, item, getBase64String(bitmap))
             }
 
             Glide.with(itemView.context)
-                .asBitmap().load(item.url)
+                .load(item.url)
                 .into(itemView.image_view)
         }
     }
 
     // interface for detecting clicks
     interface Interaction {
-        fun onItemSelected(position: Int, item: Cumulus.CloudImage, bitmap: Bitmap)
+        fun onItemSelected(position: Int, item: Cumulus.CloudImage, encodedBitmap: String)
     }
 }

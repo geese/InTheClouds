@@ -41,7 +41,7 @@ class ChooseCloudViewModel : ViewModel() {
             is ChooseCloudStateEvent.clickCloudImage -> {
                 println("DEBUG: cloud clicked")
                 var viewState = ChooseCloudViewState(
-                    editCloud = Pair(stateEvent.bitmap, stateEvent.url)
+                    editCloud = Pair(stateEvent.encodedBitmap, stateEvent.url)
                 )
                 var dataState = DataState.data(
                     data = viewState

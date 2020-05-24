@@ -8,7 +8,7 @@ sealed class ChooseCloudStateEvent {
     data class clickCloudImage(
         val id: Long? = null,
         val url: String? = null,
-        val bitmap: Bitmap? = null
+        val encodedBitmap: String? = null
     ): ChooseCloudStateEvent()
 
     class None: ChooseCloudStateEvent()
