@@ -1,5 +1,6 @@
 package com.example.intheclouds.ui.choosecloud.state
 
+import android.graphics.Bitmap
 import com.example.intheclouds.model.Cumulus
 
 /**
@@ -8,5 +9,5 @@ import com.example.intheclouds.model.Cumulus
  */
 data class ChooseCloudViewState (
     var cloudImages: ArrayList<Cumulus.CloudImage>? = null,
-    val editCloud: Pair<Long?, String?>? = null
+    val editCloud: Pair<Bitmap?, String?>? = null
 )

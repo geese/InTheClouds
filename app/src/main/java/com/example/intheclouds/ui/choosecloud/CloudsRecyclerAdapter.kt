@@ -1,8 +1,11 @@
 package com.example.intheclouds.ui.choosecloud
 
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -64,17 +67,20 @@ class CloudsRecyclerAdapter(private val interaction: Interaction? = null) :
 
         fun bind(item: Cumulus.CloudImage) = with(itemView) {
             this.setOnClickListener{
-                interaction?.onItemSelected(adapterPosition, item)
+                var bitmap = ((itemView.findViewById(R.id.image_view) as ImageView)
+                    .drawable as BitmapDrawable)
+                    .bitmap
+                interaction?.onItemSelected(adapterPosition, item, bitmap)
             }
 
             Glide.with(itemView.context)
-                .load(item.url)
-                .into(itemView.cloud_image)
+                .asBitmap().load(item.url)
+                .into(itemView.image_view)
         }
     }
 
     // interface for detecting clicks
     interface Interaction {
-        fun onItemSelected(position: Int, item: Cumulus.CloudImage)
+        fun onItemSelected(position: Int, item: Cumulus.CloudImage, bitmap: Bitmap)
     }
 }

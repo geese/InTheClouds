@@ -1,5 +1,6 @@
 package com.example.intheclouds.ui.main
 
+import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -27,9 +28,9 @@ class MainActivity : AppCompatActivity(),
         showChooseCloudFragment()
     }
 
-    override fun onCloudClicked(id: Long?, url: String?) {
-        if (id != null && url != null) {
-            showEditCloudFragment(id, url)
+    override fun onCloudClicked(bitmap: Bitmap?, url: String?) {
+        if (bitmap != null && url != null) {
+            showEditCloudFragment(bitmap, url)
         }
     }
 
@@ -71,9 +72,10 @@ class MainActivity : AppCompatActivity(),
             .commit()
     }
 
-    private fun showEditCloudFragment(id: Long, url: String) {
+    private fun showEditCloudFragment(bitmap: Bitmap, url: String) {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, EditCloudFragment.newInstance(id, url))
+            .replace(R.id.fragment_container, EditCloudFragment.newInstance(bitmap, url))
+            .addToBackStack("edit_cloud")
             .commit()
     }
 }

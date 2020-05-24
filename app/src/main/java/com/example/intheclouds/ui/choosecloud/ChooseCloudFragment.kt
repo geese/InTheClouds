@@ -1,8 +1,10 @@
 package com.example.intheclouds.ui.choosecloud
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -17,9 +19,9 @@ import java.lang.ClassCastException
 
 class ChooseCloudFragment : Fragment(), CloudsRecyclerAdapter.Interaction {
 
-    override fun onItemSelected(position: Int, item: Cumulus.CloudImage) {
+    override fun onItemSelected(position: Int, item: Cumulus.CloudImage, bitmap: Bitmap) {
         println("DEBUG: CLICKED :: position: $position, item: $item")
-        triggerCloudClickedEvent(item.id, item.url)
+        triggerCloudClickedEvent(item.id, item.url, bitmap)
     }
 
     lateinit var viewModel: ChooseCloudViewModel
@@ -38,6 +40,7 @@ class ChooseCloudFragment : Fragment(), CloudsRecyclerAdapter.Interaction {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar?.title = "Choose A Cloud"
 
         viewModel = activity?.run {
             ViewModelProvider(this).get(ChooseCloudViewModel::class.java)
@@ -99,8 +102,8 @@ class ChooseCloudFragment : Fragment(), CloudsRecyclerAdapter.Interaction {
         viewModel.setStateEvent(ChooseCloudStateEvent.getCloudImages())
     }
 
-    fun triggerCloudClickedEvent(id: Long?, url: String?) {
-        viewModel.setStateEvent(ChooseCloudStateEvent.clickCloudImage(id, url))
+    fun triggerCloudClickedEvent(id: Long?, url: String?, bitmap: Bitmap?) {
+        viewModel.setStateEvent(ChooseCloudStateEvent.clickCloudImage(id, url, bitmap))
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -126,7 +129,7 @@ class ChooseCloudFragment : Fragment(), CloudsRecyclerAdapter.Interaction {
     }
 
     interface ChooseCloudFragmentListener {
-        fun onCloudClicked(id: Long? = null, url: String? = null)
+        fun onCloudClicked(bitmap: Bitmap? = null, url: String? = null)
     }
 
     companion object {
