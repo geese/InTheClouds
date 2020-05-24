@@ -20,7 +20,11 @@ object Cumulus {
 
         @Expose
         @SerializedName("webformatURL")
-        val url: String? = null
+        val url: String? = null,
+
+        @Expose
+        @SerializedName("id")
+        val id: Long? = null
     )
 }
 

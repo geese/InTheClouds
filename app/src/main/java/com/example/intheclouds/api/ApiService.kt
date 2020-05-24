@@ -1,12 +1,18 @@
 package com.example.intheclouds.api
 
+import androidx.lifecycle.LiveData
 import com.example.intheclouds.model.Cumulus
 import com.example.intheclouds.util.Constants
+import com.example.intheclouds.util.GenericApiResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface ApiService {
+
+    // Returning LiveData instead of Call<>
+    // https://codingwithmitch.com/courses/model-view-intent-mvi-architecture/livedata-call-adapter-retrofit/
+
 
     @GET("api")
     fun getCumulusPhotos(
@@ -14,5 +20,5 @@ interface ApiService {
         @Query("q") q: String = "cumulus",
         @Query("image_type") imageType: String = "photo",
         @Query("per_page") perPage: Int = 200
-    ): Call<Cumulus.Response>
+    ): LiveData<GenericApiResponse<Cumulus.Response>>
 }
