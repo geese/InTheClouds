@@ -1,12 +1,12 @@
 package com.example.intheclouds.ui.main
 
-import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.example.intheclouds.R
+import com.example.intheclouds.room.CloudsDatabase
 import com.example.intheclouds.ui.DataStateListener
 import com.example.intheclouds.ui.choosecloud.*
 import com.example.intheclouds.ui.choosecloud.ChooseCloudFragment.ChooseCloudFragmentListener
@@ -18,10 +18,12 @@ class MainActivity : AppCompatActivity(),
     DataStateListener, ChooseCloudFragmentListener {
 
     lateinit var chooseCloudViewModel: ChooseCloudViewModel
+    lateinit var database: CloudsDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
 
         chooseCloudViewModel = ViewModelProvider(this).get(ChooseCloudViewModel::class.java)
 

@@ -1,4 +1,4 @@
-package com.example.intheclouds.repository.choosecloud
+package com.example.intheclouds.repository
 
 import androidx.lifecycle.LiveData
 import com.example.intheclouds.api.RetrofitBuilder

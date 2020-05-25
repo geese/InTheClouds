@@ -1,7 +1,6 @@
 package com.example.intheclouds.ui.choosecloud
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity

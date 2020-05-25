@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import com.example.intheclouds.model.Cumulus
 import com.example.intheclouds.util.Constants
 import com.example.intheclouds.util.GenericApiResponse
-import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
 

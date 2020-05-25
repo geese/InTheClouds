@@ -67,6 +67,8 @@ dependencies {
     annotationProcessor "com.github.bumptech.glide:compiler:$glide_version"
 
     // Room
+    // https://stackoverflow.com/questions/48694449/error-with-room-dao-class-when-using-kotlin-coroutines
+    implementation "androidx.room:room-coroutines:$room_version"
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
 }

@@ -1,9 +1,6 @@
 package com.example.intheclouds.ui.editcloud
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.os.BaseBundle
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.util.Base64.*
 import androidx.fragment.app.Fragment
@@ -11,13 +8,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 
 import com.example.intheclouds.R
-import com.example.intheclouds.util.getBase64String
+import com.example.intheclouds.room.CloudsDatabase
 import kotlinx.android.synthetic.main.edit_cloud_fragment.*
-import java.io.ByteArrayOutputStream
-import java.util.*
 
 private const val ARG_ENCODED_BITMAP = "cloud_encoded_bitmap"
 private const val ARG_URL = "cloud_url"
@@ -34,7 +30,7 @@ class EditCloudFragment : Fragment() {
     }
 
     private lateinit var viewModel: EditCloudViewModel
-
+    lateinit var database: CloudsDatabase
     private lateinit var cloudEncodedBitmap: String
     private lateinit var cloudUrl: String
 
@@ -53,8 +49,10 @@ class EditCloudFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(EditCloudViewModel::class.java)
-        // TODO: Use the ViewModel
+
+        viewModel = activity?.run {
+            ViewModelProvider(this).get(EditCloudViewModel::class.java)
+        }?: throw Exception("Invalid Activity")
 
         (activity as AppCompatActivity).supportActionBar?.title = "Caption A Cloud"
         editText.setText(cloudUrl)

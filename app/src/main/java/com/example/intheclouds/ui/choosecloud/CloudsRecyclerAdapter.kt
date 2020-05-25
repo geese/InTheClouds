@@ -1,6 +1,5 @@
 package com.example.intheclouds.ui.choosecloud
 
-import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.view.LayoutInflater
 import android.view.View

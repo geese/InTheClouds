@@ -1,6 +1,5 @@
 package com.example.intheclouds.ui.choosecloud.state
 
-import android.graphics.Bitmap
 import com.example.intheclouds.model.Cumulus
 
 /**

@@ -1,9 +1,8 @@
 package com.example.intheclouds.ui.choosecloud
 
-import android.widget.Toast
 import androidx.lifecycle.*
 import com.example.intheclouds.model.Cumulus
-import com.example.intheclouds.repository.choosecloud.ChooseCloudRepository
+import com.example.intheclouds.repository.ChooseCloudRepository
 import com.example.intheclouds.ui.choosecloud.state.ChooseCloudStateEvent
 import com.example.intheclouds.ui.choosecloud.state.ChooseCloudViewState
 import com.example.intheclouds.util.AbsentLiveData
