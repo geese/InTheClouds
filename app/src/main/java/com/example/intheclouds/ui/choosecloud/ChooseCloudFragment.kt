@@ -10,17 +10,17 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.example.intheclouds.R
-import com.example.intheclouds.model.Cumulus
+import com.example.intheclouds.room.CaptionedCloud
 import com.example.intheclouds.ui.DataStateListener
 import com.example.intheclouds.ui.choosecloud.state.ChooseCloudStateEvent
 import kotlinx.android.synthetic.main.choose_cloud_fragment.*
 import java.lang.ClassCastException
 
-class ChooseCloudFragment : Fragment(), CloudsRecyclerAdapter.Interaction {
+class ChooseCloudFragment : Fragment(), ChooseCloudsRecyclerAdapter.Interaction {
 
-    override fun onItemSelected(position: Int, item: Cumulus.CloudImage, encodedBitmap: String) {
-        println("DEBUG: CLICKED :: position: $position, item: $item")
-        triggerCloudClickedEvent(item.id, item.url, encodedBitmap)
+    override fun onItemSelected(cloud: CaptionedCloud) {
+        println("DEBUG: CLICKED :: cloud: $cloud")
+        triggerCloudClickedEvent(cloud)
     }
 
     lateinit var viewModel: ChooseCloudViewModel
@@ -28,7 +28,7 @@ class ChooseCloudFragment : Fragment(), CloudsRecyclerAdapter.Interaction {
     lateinit var dataStateHandler: DataStateListener
     lateinit var chooseCloudFragmentListener: ChooseCloudFragmentListener
 
-    lateinit var cloudsRecyclerAdapter: CloudsRecyclerAdapter
+    lateinit var chooseCloudsRecyclerAdapter: ChooseCloudsRecyclerAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,8 +59,8 @@ class ChooseCloudFragment : Fragment(), CloudsRecyclerAdapter.Interaction {
     private fun initRecyclerView() {
         cloudsRecyclerView.apply {
             layoutManager = LinearLayoutManager(activity)
-            cloudsRecyclerAdapter = CloudsRecyclerAdapter(this@ChooseCloudFragment)
-            adapter = cloudsRecyclerAdapter
+            chooseCloudsRecyclerAdapter = ChooseCloudsRecyclerAdapter(this@ChooseCloudFragment)
+            adapter = chooseCloudsRecyclerAdapter
         }
     }
 
@@ -81,9 +81,9 @@ class ChooseCloudFragment : Fragment(), CloudsRecyclerAdapter.Interaction {
                         // set CloudImages data
                         viewModel.setCloudImagesListData(clouds)
                     }
-                    chooseCloudViewState.editCloud?.let {
+                    chooseCloudViewState.cloudToEdit?.let {
                         println("DEBUG: Sending cloud click to MainActivity")
-                        chooseCloudFragmentListener.onCloudClicked(chooseCloudViewState.editCloud.first, chooseCloudViewState.editCloud.second)
+                        chooseCloudFragmentListener.onCloudClicked(chooseCloudViewState.cloudToEdit)
                     }
                 }
             }
@@ -92,17 +92,17 @@ class ChooseCloudFragment : Fragment(), CloudsRecyclerAdapter.Interaction {
         viewModel.viewState.observe(viewLifecycleOwner, Observer { viewState ->
             viewState.cloudImages?.let {
                 println("DEBUG: Setting cloud images to RecyclerView: $it")
-                cloudsRecyclerAdapter.submitList(it)
+                chooseCloudsRecyclerAdapter.submitList(it)
             }
         })
     }
 
     fun triggerLoadCloudsEvent() {
-        viewModel.setStateEvent(ChooseCloudStateEvent.getCloudImages())
+        viewModel.setStateEvent(ChooseCloudStateEvent.loadCloudImages())
     }
 
-    fun triggerCloudClickedEvent(id: Long?, url: String?, encodedBitmap: String?) {
-        viewModel.setStateEvent(ChooseCloudStateEvent.clickCloudImage(id, url, encodedBitmap))
+    fun triggerCloudClickedEvent(cloud: CaptionedCloud) {
+        viewModel.setStateEvent(ChooseCloudStateEvent.clickCloudImage(cloud))
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -128,7 +128,7 @@ class ChooseCloudFragment : Fragment(), CloudsRecyclerAdapter.Interaction {
     }
 
     interface ChooseCloudFragmentListener {
-        fun onCloudClicked(encodedBitmap: String? = null, url: String? = null)
+        fun onCloudClicked(cloud: CaptionedCloud? = null)
     }
 
     companion object {

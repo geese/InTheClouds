@@ -31,7 +31,7 @@ class ChooseCloudViewModel : ViewModel() {
         println("DEBUG: New StateEvent detected: $stateEvent")
         when(stateEvent){
 
-            is ChooseCloudStateEvent.getCloudImages -> {
+            is ChooseCloudStateEvent.loadCloudImages -> {
 
                 println("DEBUG: getting cloud images")
                 return ChooseCloudRepository.getCloudImages()
@@ -40,7 +40,7 @@ class ChooseCloudViewModel : ViewModel() {
             is ChooseCloudStateEvent.clickCloudImage -> {
                 println("DEBUG: cloud clicked")
                 var viewState = ChooseCloudViewState(
-                    editCloud = Pair(stateEvent.encodedBitmap, stateEvent.url)
+                    cloudToEdit = stateEvent.cloud
                 )
                 var dataState = DataState.data(
                     data = viewState

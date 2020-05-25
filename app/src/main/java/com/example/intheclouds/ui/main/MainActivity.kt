@@ -6,16 +6,22 @@ import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.example.intheclouds.R
+import com.example.intheclouds.model.CaptionedCloudModel
+import com.example.intheclouds.room.CaptionedCloud
 import com.example.intheclouds.room.CloudsDatabase
 import com.example.intheclouds.ui.DataStateListener
+import com.example.intheclouds.ui.captionedclouds.CaptionedCloudsFragment
 import com.example.intheclouds.ui.choosecloud.*
 import com.example.intheclouds.ui.choosecloud.ChooseCloudFragment.ChooseCloudFragmentListener
 import com.example.intheclouds.ui.editcloud.EditCloudFragment
 import com.example.intheclouds.util.DataState
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(),
-    DataStateListener, ChooseCloudFragmentListener {
+class MainActivity :
+    AppCompatActivity(),
+    DataStateListener,
+    ChooseCloudFragmentListener,
+    EditCloudFragment.EditCloudFragmentListener {
 
     lateinit var chooseCloudViewModel: ChooseCloudViewModel
     lateinit var database: CloudsDatabase
@@ -24,16 +30,21 @@ class MainActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
         chooseCloudViewModel = ViewModelProvider(this).get(ChooseCloudViewModel::class.java)
 
         showChooseCloudFragment()
+        //showCaptionedCloudsFragment()
     }
 
-    override fun onCloudClicked(encodedBitmap: String?, url: String?) {
-        if (encodedBitmap != null && url != null) {
-            showEditCloudFragment(encodedBitmap, url)
+    override fun onCloudClicked(cloud: CaptionedCloud?) {
+        cloud?.let {
+            showEditCloudFragment(cloud)
         }
+    }
+
+    override fun onCloudSaved() {
+        showToast("Cloud Saved!")
+        showCaptionedCloudsFragment()
     }
 
     override fun onDataStateChange(dataState: DataState<*>?) {
@@ -68,15 +79,21 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
+    private fun showCaptionedCloudsFragment() {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, CaptionedCloudsFragment.newInstance())
+            .commit()
+    }
+
     private fun showChooseCloudFragment() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, ChooseCloudFragment.newInstance())
             .commit()
     }
 
-    private fun showEditCloudFragment(encodedBitmap: String, url: String) {
+    private fun showEditCloudFragment(cloud: CaptionedCloud) {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, EditCloudFragment.newInstance(encodedBitmap, url))
+            .replace(R.id.fragment_container, EditCloudFragment.newInstance(cloud))
             .addToBackStack("edit_cloud")
             .commit()
     }

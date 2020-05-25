@@ -14,7 +14,7 @@ class EditCloudViewModel(application: Application) : AndroidViewModel(applicatio
     private val captionedCloudRepository: CaptionedCloudRepository
 
     init {
-        val cloudDao = CloudsDatabase.getInstance(application, viewModelScope).cloudDao()
+        val cloudDao = CloudsDatabase.getDatabase(application, viewModelScope).cloudDao()
         captionedCloudRepository =
             CaptionedCloudRepository(cloudDao)
     }

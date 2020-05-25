@@ -1,14 +1,13 @@
 package com.example.intheclouds.ui.choosecloud.state
 
-import android.graphics.Bitmap
+import com.example.intheclouds.room.CaptionedCloud
 
 sealed class ChooseCloudStateEvent {
 
-    class getCloudImages: ChooseCloudStateEvent()
+    class loadCloudImages: ChooseCloudStateEvent()
+
     data class clickCloudImage(
-        val id: Long? = null,
-        val url: String? = null,
-        val encodedBitmap: String? = null
+        val cloud: CaptionedCloud
     ): ChooseCloudStateEvent()
 
     class None: ChooseCloudStateEvent()

@@ -1,29 +1,26 @@
-package com.example.intheclouds.ui.choosecloud
+package com.example.intheclouds.ui.captionedclouds
 
-import android.graphics.drawable.BitmapDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.intheclouds.R
-import com.example.intheclouds.model.Cumulus
-import com.example.intheclouds.util.getBase64String
-import kotlinx.android.synthetic.main.cloud_row_item.view.*
+import com.example.intheclouds.room.CaptionedCloud
+import kotlinx.android.synthetic.main.captioned_cloud_row_item.view.*
 
-class CloudsRecyclerAdapter(private val interaction: Interaction? = null) :
+class CaptionedCloudsRecyclerAdapter(private val interaction: Interaction? = null) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
-    val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Cumulus.CloudImage>() {
+    val DIFF_CALLBACK = object : DiffUtil.ItemCallback<CaptionedCloud>() {
 
-        override fun areItemsTheSame(oldItem: Cumulus.CloudImage, newItem: Cumulus.CloudImage): Boolean {
+        override fun areItemsTheSame(oldItem: CaptionedCloud, newItem: CaptionedCloud): Boolean {
             return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: Cumulus.CloudImage, newItem: Cumulus.CloudImage): Boolean {
+        override fun areContentsTheSame(oldItem: CaptionedCloud, newItem: CaptionedCloud): Boolean {
             return oldItem == newItem
         }
     }
@@ -35,7 +32,7 @@ class CloudsRecyclerAdapter(private val interaction: Interaction? = null) :
         return CloudImageViewHolder(
             LayoutInflater.from(parent.context)
                 .inflate(
-                    R.layout.cloud_row_item,
+                    R.layout.captioned_cloud_row_item,
                     parent,
                     false
                 ),
@@ -55,7 +52,7 @@ class CloudsRecyclerAdapter(private val interaction: Interaction? = null) :
         return differ.currentList.size
     }
 
-    fun submitList(list: List<Cumulus.CloudImage>) {
+    fun submitList(list: List<CaptionedCloud>) {
         differ.submitList(list)
     }
 
@@ -65,22 +62,24 @@ class CloudsRecyclerAdapter(private val interaction: Interaction? = null) :
         private val interaction: Interaction?
     ) : RecyclerView.ViewHolder(itemView) {
 
-        fun bind(item: Cumulus.CloudImage) = with(itemView) {
+        fun bind(item: CaptionedCloud) = with(itemView) {
             this.setOnClickListener{
-                var bitmap = ((itemView.findViewById(R.id.image_view) as ImageView)
+                /*var bitmap = ((itemView.findViewById(R.id.image_view) as ImageView)
                     .drawable as BitmapDrawable)
                     .bitmap
-                interaction?.onItemSelected(adapterPosition, item, getBase64String(bitmap))
+                interaction?.onItemSelected(adapterPosition, item, getByteArray(bitmap))*/
             }
 
             Glide.with(itemView.context)
                 .load(item.url)
-                .into(itemView.image_view)
+                .into(itemView.captioned_cloud_image_view)
+
+            itemView.caption_text_view.text = item.caption
         }
     }
 
     // interface for detecting clicks
     interface Interaction {
-        fun onItemSelected(position: Int, item: Cumulus.CloudImage, encodedBitmap: String)
+        fun onItemSelected()
     }
 }

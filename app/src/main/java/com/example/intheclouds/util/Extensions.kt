@@ -12,3 +12,15 @@ fun getBase64String(bitmap: Bitmap) : String {
         return Base64.encodeToString(imageBytes, Base64.DEFAULT)
     }
 }
+
+fun getByteArray(bitmap: Bitmap) : ByteArray {
+    var baos = ByteArrayOutputStream()
+    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+    return baos.toByteArray()
+}
+
+fun Bitmap.toByteArray() : ByteArray {
+    var baos = ByteArrayOutputStream()
+    this.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+    return baos.toByteArray()
+}

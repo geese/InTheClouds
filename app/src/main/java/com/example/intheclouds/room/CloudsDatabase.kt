@@ -6,7 +6,9 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Database(entities = [(CaptionedCloud::class)], version = 1)
 abstract class CloudsDatabase : RoomDatabase() {
@@ -20,44 +22,71 @@ abstract class CloudsDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: CloudsDatabase? = null
 
-        fun getInstance(
+        fun getDatabase(
             context: Context,
             scope: CoroutineScope
         ): CloudsDatabase {
-            return INSTANCE ?: synchronized(this) {
-                INSTANCE ?: buildDatabase(context).also { INSTANCE = it }
+            val tempInstance = INSTANCE
+            if (tempInstance != null) {
+                return tempInstance
+            }
+            synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    CloudsDatabase::class.java,
+                    "clouds-database"
+                )
+                    .addCallback(CloudsDatabaseCallback(scope))
+                    .build()
+                INSTANCE = instance
+                return instance
             }
         }
-
-        private fun buildDatabase(context: Context): CloudsDatabase =
-            Room.databaseBuilder(
-                context.applicationContext, CloudsDatabase::class.java, "app-database"
-            ).build()
     }
 
     private class CloudsDatabaseCallback(
         private val scope: CoroutineScope
-    ) : RoomDatabase.Callback {
+    ) : RoomDatabase.Callback() {
 
         override fun onCreate(db: SupportSQLiteDatabase) {
             super.onCreate(db)
             INSTANCE?.let { database ->
                 scope.launch {
-                    populateDatabase(database.cloudDao())
+                    withContext(Dispatchers.IO) {
+                        populateDatabase(database.cloudDao())
+                    }
                 }
             }
         }
 
         suspend fun populateDatabase(cloudDao: CloudDao) {
+
+            // create sample clouds
+            var cloudOne = CaptionedCloud(
+                url = "https://pixabay.com/get/5ee7d4444b5ab10ff3d8992cc62e3177143fd7e64e507440752b79dd944bc6_640.jpg",
+                caption = "Sample Cloud One"
+            )
+            var cloudTwo = CaptionedCloud(
+                url = "https://pixabay.com/get/54e9d5454f50a914f1dc8460962931781c3edeec504c704c7c2f7fd69e4ec35b_640.jpg",
+                caption = "Sample Cloud Two"
+            )
+            var cloudThree = CaptionedCloud(
+                url = "https://pixabay.com/get/54e0dc424253a514f1dc8460962931781c3edeec504c704c7c2f7fd69e4ec35b_640.jpg",
+                caption = "Sample Cloud Three"
+            )
+            var cloudFour = CaptionedCloud(
+                url = "https://pixabay.com/get/54e0dd464b53a814f1dc8460962931781c3edeec504c704c7c2f7fd69e4ec35b_640.jpg",
+                caption = "Sample Cloud Four"
+            )
+
             // first delete any content
             cloudDao.deleteAll()
 
             // add sample clouds
-            var cloud = CaptionedCloud(
-                url = "https://pixabay.com/get/54e8d145425ab10ff3d8992cc62e3177143fd7e64e507440752e7cd3934cc4_640.jpg",
-                caption = "Sample Cloud One"
-            )
+            cloudDao.insert(cloudOne)
+            cloudDao.insert(cloudTwo)
+            cloudDao.insert(cloudThree)
+            cloudDao.insert(cloudFour)
         }
-
     }
 }

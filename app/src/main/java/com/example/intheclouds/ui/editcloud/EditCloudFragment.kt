@@ -2,7 +2,6 @@ package com.example.intheclouds.ui.editcloud
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Base64.*
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,32 +11,26 @@ import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 
 import com.example.intheclouds.R
-import com.example.intheclouds.room.CloudsDatabase
+import com.example.intheclouds.model.CaptionedCloudModel
+import com.example.intheclouds.room.CaptionedCloud
 import kotlinx.android.synthetic.main.edit_cloud_fragment.*
 
-private const val ARG_ENCODED_BITMAP = "cloud_encoded_bitmap"
-private const val ARG_URL = "cloud_url"
+private const val ARG_CAPTIONED_CLOUD = "captioned_cloud"
 
 class EditCloudFragment : Fragment() {
 
-    companion object {
-        fun newInstance(encodedBitmap: String, url: String) = EditCloudFragment().apply {
-            arguments = Bundle().apply {
-                putString(ARG_ENCODED_BITMAP, encodedBitmap)
-                putString(ARG_URL, url)
-            }
-        }
-    }
-
     private lateinit var viewModel: EditCloudViewModel
-    lateinit var database: CloudsDatabase
-    private lateinit var cloudEncodedBitmap: String
-    private lateinit var cloudUrl: String
+    private lateinit var editCloudFragmentListener: EditCloudFragmentListener
+
+    private lateinit var captionedCloud: CaptionedCloud
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        arguments?.getString(ARG_ENCODED_BITMAP)?.let { cloudEncodedBitmap = it }
-        arguments?.getString(ARG_URL)?.let { cloudUrl = it }
+        //arguments?.getByteArray(ARG_ENCODED_BITMAP)?.let { cloudEncodedBitmap = it }
+        //arguments?.getString(ARG_URL)?.let { cloudUrl = it }
+        arguments?.getParcelable<CaptionedCloud>(ARG_CAPTIONED_CLOUD)?.let { captionedCloud = it }
+
+        editCloudFragmentListener = context as EditCloudFragmentListener
     }
 
     override fun onCreateView(
@@ -55,13 +48,32 @@ class EditCloudFragment : Fragment() {
         }?: throw Exception("Invalid Activity")
 
         (activity as AppCompatActivity).supportActionBar?.title = "Caption A Cloud"
-        editText.setText(cloudUrl)
-
-        var decodedBytes = decode(cloudEncodedBitmap, DEFAULT)
+        editText.setText(captionedCloud.url)
 
         Glide.with(this)
             .asBitmap()
-            .load(decodedBytes)
-            .into(image_view)
+            .load(captionedCloud.byteArray)
+            .into(edit_cloud_image_view)
+
+        save_button.setOnClickListener {
+
+            // trigger a save intent
+
+            captionedCloud.caption = editText.text.toString()
+            viewModel.insert(captionedCloud)
+            editCloudFragmentListener.onCloudSaved()
+        }
+    }
+
+    interface EditCloudFragmentListener {
+        fun onCloudSaved()
+    }
+
+    companion object {
+        fun newInstance(cloud: CaptionedCloud) = EditCloudFragment().apply {
+            arguments = Bundle().apply {
+                putParcelable(ARG_CAPTIONED_CLOUD, cloud)
+            }
+        }
     }
 }
