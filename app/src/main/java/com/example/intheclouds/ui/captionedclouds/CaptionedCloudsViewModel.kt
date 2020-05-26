@@ -21,19 +21,6 @@ class CaptionedCloudsViewModel(application: Application): AndroidViewModel(appli
             .cloudDao()
     )
 
-    // Using LiveData and caching what getAlphabetizedWords returns has several benefits:
-    // - We can put an observer on the data (instead of polling for changes) and only update the
-    //   the UI when the data actually changes.
-    // - Repository is completely separated from the UI through the ViewModel.
-    // - https://codelabs.developers.google.com/codelabs/android-room-with-a-view-kotlin/#9
-    //val allCaptionedClouds: LiveData<List<CaptionedCloud>>
-
-    /*init{
-        val cloudDao = CloudsDatabase.getDatabase(application, viewModelScope).cloudDao()
-        cloudsRepository = CaptionedCloudRepository(cloudDao)
-        //allCaptionedClouds = cloudsRepository.allClouds
-    }*/
-
     // triggers the different actions to take
     private val _stateEvent: MutableLiveData<CaptionedCloudStateEvent> = MutableLiveData()
 
@@ -63,17 +50,12 @@ class CaptionedCloudsViewModel(application: Application): AndroidViewModel(appli
 
             is CaptionedCloudStateEvent.clickCloudImage -> {
                 println("DEBUG: cloud clicked")
-                return AbsentLiveData.create()
 
-                /*var viewState = ChooseCloudViewState(
-                    cloudToEdit = stateEvent.cloud
-                )
-                var dataState = DataState.data(
-                    data = viewState
-                )
-                var result = MediatorLiveData<DataState<ChooseCloudViewState>>()
-                result.postValue(dataState)
-                return result*/
+                return MediatorLiveData<DataState<CaptionedCloudViewState>>().apply {
+                    this.value = DataState.data(
+                        data = CaptionedCloudViewState(cloudToEdit = stateEvent.cloud)
+                    )
+                }
             }
 
             is CaptionedCloudStateEvent.None ->{

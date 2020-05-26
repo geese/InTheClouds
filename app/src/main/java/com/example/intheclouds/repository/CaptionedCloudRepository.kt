@@ -2,11 +2,14 @@ package com.example.intheclouds.repository
 
 import android.provider.Settings
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.intheclouds.room.CaptionedCloud
 import com.example.intheclouds.room.CloudDao
 import com.example.intheclouds.ui.captionedclouds.state.CaptionedCloudViewState
+import com.example.intheclouds.ui.editcloud.state.EditCloudViewState
 import com.example.intheclouds.util.DataState
+import com.example.intheclouds.util.Event
 import kotlinx.coroutines.*
 
 // Declares the DAO as a private property in the constructor. Pass in the DAO
@@ -28,17 +31,46 @@ class CaptionedCloudRepository(private val cloudDao: CloudDao) {
         return liveData
     }
 
-    suspend fun insert(cloud: CaptionedCloud) {
-        cloudDao.insert(cloud)
+    fun insertOrUpdate(cloud: CaptionedCloud) : LiveData<DataState<EditCloudViewState>> {
+        var resultId = update(cloud)
+        if (resultId == 0) {
+            resultId = insert(cloud).toInt()
+        }
+        return MediatorLiveData<DataState<EditCloudViewState>>().apply{
+            value = DataState(
+                message = Event("Cloud Saved!"),
+                data = Event.dataEvent(EditCloudViewState(savedCloudId = resultId))
+            )
+        }
     }
 
-    fun update(cloud: CaptionedCloud) {
-        cloudDao.update(cloud)
+    fun delete(cloud: CaptionedCloud) : LiveData<DataState<EditCloudViewState>> {
+        GlobalScope.launch {
+            withContext(Dispatchers.IO) {
+                cloudDao.delete(cloud)
+            }
+        }
+        return MediatorLiveData<DataState<EditCloudViewState>>().apply {
+            value = DataState(
+                message = Event("Cloud Deleted!"),
+                data = Event.dataEvent(EditCloudViewState(deletedCloudId = cloud.id))
+            )
+        }
     }
 
-    fun delete(cloud: CaptionedCloud) {
-        cloudDao.delete(cloud)
+    fun insert(cloud: CaptionedCloud) : Long {
+        return runBlocking(Dispatchers.IO) {
+            cloudDao.insert(cloud)
+        }
     }
+
+    fun update(cloud: CaptionedCloud) : Int {
+        return runBlocking(Dispatchers.IO) {
+            cloudDao.update(cloud)
+        }
+    }
+
+
 
     fun getCaptionedCloud(id: Long): LiveData<CaptionedCloud> {  //todo DataState
         return cloudDao.getCaptionedCloud(id)

@@ -6,25 +6,26 @@ import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.example.intheclouds.R
-import com.example.intheclouds.model.CaptionedCloudModel
 import com.example.intheclouds.room.CaptionedCloud
 import com.example.intheclouds.room.CloudsDatabase
 import com.example.intheclouds.ui.DataStateListener
 import com.example.intheclouds.ui.captionedclouds.CaptionedCloudsFragment
+import com.example.intheclouds.ui.captionedclouds.CaptionedCloudsFragment.CaptionedCloudsFragmentListener
 import com.example.intheclouds.ui.choosecloud.*
 import com.example.intheclouds.ui.choosecloud.ChooseCloudFragment.ChooseCloudFragmentListener
 import com.example.intheclouds.ui.editcloud.EditCloudFragment
+import com.example.intheclouds.ui.editcloud.EditCloudFragment.EditCloudFragmentListener
 import com.example.intheclouds.util.DataState
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity :
     AppCompatActivity(),
     DataStateListener,
+    CaptionedCloudsFragmentListener,
     ChooseCloudFragmentListener,
-    EditCloudFragment.EditCloudFragmentListener {
+    EditCloudFragmentListener {
 
     lateinit var chooseCloudViewModel: ChooseCloudViewModel
-    lateinit var database: CloudsDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,18 +33,29 @@ class MainActivity :
 
         chooseCloudViewModel = ViewModelProvider(this).get(ChooseCloudViewModel::class.java)
 
-        showChooseCloudFragment()
-        //showCaptionedCloudsFragment()
+        // showChooseCloudFragment()
+        showCaptionedCloudsFragment()
     }
 
-    override fun onCloudClicked(cloud: CaptionedCloud?) {
+    override fun onAddCloudClicked() {
+        showChooseCloudFragment()
+    }
+
+    override fun onCloudClicked(cloud: CaptionedCloud?, newCloud: Boolean) {
         cloud?.let {
-            showEditCloudFragment(cloud)
+            showEditCloudFragment(cloud, newCloud)
         }
     }
 
     override fun onCloudSaved() {
-        showToast("Cloud Saved!")
+        showCaptionedCloudsFragment()
+    }
+
+    override fun onCloudDeleted() {
+        showCaptionedCloudsFragment()
+    }
+
+    override fun goHome() {
         showCaptionedCloudsFragment()
     }
 
@@ -57,7 +69,7 @@ class MainActivity :
             // handle loading
             showProgressBar(dataState.loading)
 
-            // handle message (error)
+            // handle message
             dataState.message?.let {  event ->
                 event.getContentIfNotHandled()?.let { message ->
                     showToast(message)
@@ -88,12 +100,13 @@ class MainActivity :
     private fun showChooseCloudFragment() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, ChooseCloudFragment.newInstance())
+            .addToBackStack("choose_cloud")
             .commit()
     }
 
-    private fun showEditCloudFragment(cloud: CaptionedCloud) {
+    private fun showEditCloudFragment(cloud: CaptionedCloud, newCloud: Boolean) {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, EditCloudFragment.newInstance(cloud))
+            .replace(R.id.fragment_container, EditCloudFragment.newInstance(cloud, newCloud))
             .addToBackStack("edit_cloud")
             .commit()
     }

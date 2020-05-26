@@ -9,5 +9,5 @@ import com.example.intheclouds.room.CaptionedCloud
  */
 data class CaptionedCloudViewState (
     var clouds: List<CaptionedCloud>? = null,
-    val cloudToEdit: CaptionedCloud? = null
+    var cloudToEdit: CaptionedCloud? = null
 )

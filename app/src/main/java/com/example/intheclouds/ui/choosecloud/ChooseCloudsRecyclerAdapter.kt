@@ -12,7 +12,7 @@ import com.bumptech.glide.Glide
 import com.example.intheclouds.R
 import com.example.intheclouds.model.Cumulus
 import com.example.intheclouds.room.CaptionedCloud
-import com.example.intheclouds.util.getByteArray
+import com.example.intheclouds.util.toByteArray
 import kotlinx.android.synthetic.main.cloud_row_item.view.*
 
 class ChooseCloudsRecyclerAdapter(private val interaction: Interaction? = null) :
@@ -74,7 +74,7 @@ class ChooseCloudsRecyclerAdapter(private val interaction: Interaction? = null) 
                 interaction?.onItemSelected(
                     CaptionedCloud(
                         url = item.url ?: "",
-                        byteArray = getByteArray(bitmap), // todo try bitmap.toByteArray()
+                        byteArray = bitmap.toByteArray(),
                         caption = ""
                     )
                 )

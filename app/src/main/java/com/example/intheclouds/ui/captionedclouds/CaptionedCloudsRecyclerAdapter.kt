@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.intheclouds.R
 import com.example.intheclouds.room.CaptionedCloud
+import com.example.intheclouds.ui.choosecloud.ChooseCloudsRecyclerAdapter
 import kotlinx.android.synthetic.main.captioned_cloud_row_item.view.*
 
 class CaptionedCloudsRecyclerAdapter(private val interaction: Interaction? = null) :
@@ -59,15 +60,12 @@ class CaptionedCloudsRecyclerAdapter(private val interaction: Interaction? = nul
     class CloudImageViewHolder
     constructor(
         itemView: View,
-        private val interaction: Interaction?
+        private val interaction: CaptionedCloudsRecyclerAdapter.Interaction?
     ) : RecyclerView.ViewHolder(itemView) {
 
         fun bind(item: CaptionedCloud) = with(itemView) {
             this.setOnClickListener{
-                /*var bitmap = ((itemView.findViewById(R.id.image_view) as ImageView)
-                    .drawable as BitmapDrawable)
-                    .bitmap
-                interaction?.onItemSelected(adapterPosition, item, getByteArray(bitmap))*/
+                interaction?.onItemSelected(item)
             }
 
             Glide.with(itemView.context)
@@ -80,6 +78,6 @@ class CaptionedCloudsRecyclerAdapter(private val interaction: Interaction? = nul
 
     // interface for detecting clicks
     interface Interaction {
-        fun onItemSelected()
+        fun onItemSelected(cloud: CaptionedCloud)
     }
 }

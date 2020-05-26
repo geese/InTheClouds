@@ -1,25 +1,63 @@
 package com.example.intheclouds.ui.editcloud
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.intheclouds.repository.CaptionedCloudRepository
 import com.example.intheclouds.room.CloudsDatabase
-import com.example.intheclouds.room.CaptionedCloud
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.example.intheclouds.ui.choosecloud.state.ChooseCloudStateEvent
+import com.example.intheclouds.ui.editcloud.state.EditCloudStateEvent
+import com.example.intheclouds.ui.editcloud.state.EditCloudViewState
+import com.example.intheclouds.util.AbsentLiveData
+import com.example.intheclouds.util.DataState
 
 class EditCloudViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val captionedCloudRepository: CaptionedCloudRepository
+    private val cloudsRepository = CaptionedCloudRepository(
+        CloudsDatabase.getDatabase(application, viewModelScope)
+            .cloudDao()
+    )
 
-    init {
-        val cloudDao = CloudsDatabase.getDatabase(application, viewModelScope).cloudDao()
-        captionedCloudRepository =
-            CaptionedCloudRepository(cloudDao)
+   /* fun insert(cloud: CaptionedCloud) = viewModelScope.launch(Dispatchers.IO) {
+        captionedCloudRepository.insert(cloud)
+    }*/
+
+    // triggers the different actions to take
+    private val _stateEvent: MutableLiveData<EditCloudStateEvent> = MutableLiveData()
+
+    // observing the different data models that are visible in the view
+    private val _viewState: MutableLiveData<EditCloudViewState> = MutableLiveData()
+
+    val viewState: LiveData<EditCloudViewState>
+        get() = _viewState
+
+    // listen to state events - when one is detected, handle it and return LiveData accordingly
+    val dataState: LiveData<DataState<EditCloudViewState>> = Transformations
+        .switchMap(_stateEvent){ stateEvent ->
+            stateEvent?.let {
+                handleStateEvent(stateEvent)
+            }
+        }
+
+    fun handleStateEvent(stateEvent: EditCloudStateEvent): LiveData<DataState<EditCloudViewState>>{
+        println("DEBUG: New StateEvent detected: $stateEvent")
+        when(stateEvent){
+
+            is EditCloudStateEvent.SaveCaptionedCloud -> {
+                println("DEBUG: saving captioned cloud")
+                return cloudsRepository.insertOrUpdate(stateEvent.cloud)
+            }
+
+            is EditCloudStateEvent.DeleteCaptionedCloud -> {
+                return cloudsRepository.delete(stateEvent.cloud)
+            }
+
+            is EditCloudStateEvent.None ->{
+                return AbsentLiveData.create()
+            }
+        }
     }
 
-    fun insert(cloud: CaptionedCloud) = viewModelScope.launch(Dispatchers.IO) {
-        captionedCloudRepository.insert(cloud)
+    fun setStateEvent(event: EditCloudStateEvent) {
+        _stateEvent.value = event
     }
 }

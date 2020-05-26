@@ -3,6 +3,7 @@ package com.example.intheclouds.ui.choosecloud
 import android.content.Context
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -13,13 +14,13 @@ import com.example.intheclouds.R
 import com.example.intheclouds.room.CaptionedCloud
 import com.example.intheclouds.ui.DataStateListener
 import com.example.intheclouds.ui.choosecloud.state.ChooseCloudStateEvent
+import com.example.intheclouds.ui.main.MainActivity
 import kotlinx.android.synthetic.main.choose_cloud_fragment.*
 import java.lang.ClassCastException
 
 class ChooseCloudFragment : Fragment(), ChooseCloudsRecyclerAdapter.Interaction {
 
     override fun onItemSelected(cloud: CaptionedCloud) {
-        println("DEBUG: CLICKED :: cloud: $cloud")
         triggerCloudClickedEvent(cloud)
     }
 
@@ -39,7 +40,8 @@ class ChooseCloudFragment : Fragment(), ChooseCloudsRecyclerAdapter.Interaction 
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.title = "Choose A Cloud"
+        requireActivity().title = "Choose A Cloud"
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         viewModel = activity?.run {
             ViewModelProvider(this).get(ChooseCloudViewModel::class.java)
@@ -49,6 +51,10 @@ class ChooseCloudFragment : Fragment(), ChooseCloudsRecyclerAdapter.Interaction 
 
         subscribeObservers()
         initRecyclerView()
+
+        if (viewModel.viewState.value?.cloudImages == null) {
+            triggerLoadCloudsEvent()
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -77,13 +83,14 @@ class ChooseCloudFragment : Fragment(), ChooseCloudsRecyclerAdapter.Interaction 
             // Handle Data<T>
             dataState.data?.let { event ->
                 event.getContentIfNotHandled()?.let { chooseCloudViewState ->
-                    chooseCloudViewState.cloudImages?.let { clouds ->
-                        // set CloudImages data
-                        viewModel.setCloudImagesListData(clouds)
-                    }
-                    chooseCloudViewState.cloudToEdit?.let {
-                        println("DEBUG: Sending cloud click to MainActivity")
-                        chooseCloudFragmentListener.onCloudClicked(chooseCloudViewState.cloudToEdit)
+                    with(chooseCloudViewState) {
+                        cloudImages?.let { clouds ->
+                            // set CloudImages data
+                            viewModel.setCloudImagesListData(clouds)
+                        }
+                        cloudToEdit?.let {
+                            chooseCloudFragmentListener.onCloudClicked(cloud = it, newCloud = true)
+                        }
                     }
                 }
             }
@@ -113,6 +120,7 @@ class ChooseCloudFragment : Fragment(), ChooseCloudsRecyclerAdapter.Interaction 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.action_get_clouds -> triggerLoadCloudsEvent()
+            android.R.id.home -> requireActivity().supportFragmentManager.popBackStackImmediate()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -128,7 +136,7 @@ class ChooseCloudFragment : Fragment(), ChooseCloudsRecyclerAdapter.Interaction 
     }
 
     interface ChooseCloudFragmentListener {
-        fun onCloudClicked(cloud: CaptionedCloud? = null)
+        fun onCloudClicked(cloud: CaptionedCloud? = null, newCloud: Boolean)
     }
 
     companion object {

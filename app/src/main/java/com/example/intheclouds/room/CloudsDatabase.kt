@@ -83,10 +83,10 @@ abstract class CloudsDatabase : RoomDatabase() {
             cloudDao.deleteAll()
 
             // add sample clouds
-            cloudDao.insert(cloudOne)
+            /*cloudDao.insert(cloudOne)
             cloudDao.insert(cloudTwo)
             cloudDao.insert(cloudThree)
-            cloudDao.insert(cloudFour)
+            cloudDao.insert(cloudFour)*/
         }
     }
 }

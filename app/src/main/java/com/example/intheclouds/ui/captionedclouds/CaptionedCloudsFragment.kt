@@ -1,26 +1,31 @@
 package com.example.intheclouds.ui.captionedclouds
 
+import android.content.Context
 import android.os.Bundle
+import android.view.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.example.intheclouds.R
+import com.example.intheclouds.room.CaptionedCloud
 import com.example.intheclouds.ui.captionedclouds.state.CaptionedCloudStateEvent
+import com.example.intheclouds.ui.choosecloud.ChooseCloudFragment
 import com.example.intheclouds.ui.choosecloud.state.ChooseCloudStateEvent
 import kotlinx.android.synthetic.main.captioned_clouds_fragment.*
+import java.lang.ClassCastException
 
 class CaptionedCloudsFragment : Fragment(), CaptionedCloudsRecyclerAdapter.Interaction {
 
-    override fun onItemSelected() {
-
+    override fun onItemSelected(cloud: CaptionedCloud) {
+        triggerCloudClickedEvent(cloud)
     }
 
     private lateinit var viewModel: CaptionedCloudsViewModel
+
+    lateinit var captionedCloudsFragmentListener: CaptionedCloudsFragmentListener
 
     private lateinit var captionedCloudsRecyclerAdapter: CaptionedCloudsRecyclerAdapter
 
@@ -34,6 +39,9 @@ class CaptionedCloudsFragment : Fragment(), CaptionedCloudsRecyclerAdapter.Inter
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        requireActivity().title = "In The Clouds"
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+
         viewModel = activity?.run {
             ViewModelProvider(this).get(CaptionedCloudsViewModel::class.java)
         }?: throw Exception("Invalid Activity")
@@ -43,6 +51,32 @@ class CaptionedCloudsFragment : Fragment(), CaptionedCloudsRecyclerAdapter.Inter
         subscribeObservers()
         initRecyclerView()
         triggerLoadCloudsEvent()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        try {
+            captionedCloudsFragmentListener = context as CaptionedCloudsFragmentListener
+        } catch (e: ClassCastException) {
+            println("DEBUG: ${e.message}")
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.captioned_cloud_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.action_add_cloud -> captionedCloudsFragmentListener.onAddCloudClicked()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun subscribeObservers() {
@@ -56,6 +90,9 @@ class CaptionedCloudsFragment : Fragment(), CaptionedCloudsRecyclerAdapter.Inter
                     captionedCloudViewState.clouds?.let { clouds ->
                         viewModel.setCloudImagesListData(clouds)
                     }
+                    captionedCloudViewState.cloudToEdit?.let {
+                        captionedCloudsFragmentListener.onCloudClicked(it, newCloud = false)
+                    }
                 }
             }
         })
@@ -68,11 +105,6 @@ class CaptionedCloudsFragment : Fragment(), CaptionedCloudsRecyclerAdapter.Inter
 
         })
 
-       /* viewModel.allCaptionedClouds.observe(viewLifecycleOwner, Observer { clouds ->
-            clouds?.let {
-                captionedCloudsRecyclerAdapter.submitList(clouds)
-            }
-        })*/
     }
 
     private fun initRecyclerView() {
@@ -85,6 +117,15 @@ class CaptionedCloudsFragment : Fragment(), CaptionedCloudsRecyclerAdapter.Inter
 
     fun triggerLoadCloudsEvent() {
         viewModel.setStateEvent(CaptionedCloudStateEvent.loadCloudImages())
+    }
+
+    fun triggerCloudClickedEvent(cloud: CaptionedCloud) {
+        viewModel.setStateEvent(CaptionedCloudStateEvent.clickCloudImage(cloud))
+    }
+
+    interface CaptionedCloudsFragmentListener {
+        fun onAddCloudClicked()
+        fun onCloudClicked(cloud: CaptionedCloud?, newCloud: Boolean)
     }
 
     companion object {
