@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#0097a7</color>
-    <color name="colorPrimaryDark">#00838f</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorPrimary">#0288d1</color>      <!--700-->
+    <color name="colorPrimaryDark">#0277bd</color>  <!--800-->
+    <color name="colorAccent">#3f51b5</color>
+
+    <color name="displayBackgroundDark">#00052a</color>
+    <color name="displayBackgroundLight">#eceff1</color>
+
+    <color name="materialGreen700">#388e3c</color>
+
 </resources>
+
+<!-- #001525 (with cyan) -->
+<!-- #001525 (a pretty dark blue) -->

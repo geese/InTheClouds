@@ -3,29 +3,30 @@ package com.example.intheclouds.ui.choosecloud
 import android.content.Context
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-
 import com.example.intheclouds.R
-import com.example.intheclouds.model.Cumulus
+import com.example.intheclouds.room.CaptionedCloud
 import com.example.intheclouds.ui.DataStateListener
 import com.example.intheclouds.ui.choosecloud.state.ChooseCloudStateEvent
+import com.example.intheclouds.ui.editcloud.EditCloudViewModel
 import kotlinx.android.synthetic.main.choose_cloud_fragment.*
-import java.lang.ClassCastException
 
-class ChooseCloudFragment : Fragment(), CloudsRecyclerAdapter.Interaction {
+class ChooseCloudFragment : Fragment(), ChooseCloudsRecyclerAdapter.Interaction {
 
-    override fun onItemSelected(position: Int, item: Cumulus.CloudImage) {
-        println("DEBUG: CLICKED :: position: $position, item: $item")
+    override fun onItemSelected(cloud: CaptionedCloud) {
+        triggerCloudClickedEvent(cloud)
     }
 
     lateinit var viewModel: ChooseCloudViewModel
 
     lateinit var dataStateHandler: DataStateListener
 
-    lateinit var cloudsRecyclerAdapter: CloudsRecyclerAdapter
+    lateinit var chooseCloudsRecyclerAdapter: ChooseCloudsRecyclerAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,6 +37,8 @@ class ChooseCloudFragment : Fragment(), CloudsRecyclerAdapter.Interaction {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        requireActivity().title = "Choose A Cloud"
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         viewModel = activity?.run {
             ViewModelProvider(this).get(ChooseCloudViewModel::class.java)
@@ -45,6 +48,10 @@ class ChooseCloudFragment : Fragment(), CloudsRecyclerAdapter.Interaction {
 
         subscribeObservers()
         initRecyclerView()
+
+        if (viewModel.viewState.value?.cloudImages == null) {
+            triggerLoadCloudsEvent()
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -55,8 +62,8 @@ class ChooseCloudFragment : Fragment(), CloudsRecyclerAdapter.Interaction {
     private fun initRecyclerView() {
         cloudsRecyclerView.apply {
             layoutManager = LinearLayoutManager(activity)
-            cloudsRecyclerAdapter = CloudsRecyclerAdapter(this@ChooseCloudFragment)
-            adapter = cloudsRecyclerAdapter
+            chooseCloudsRecyclerAdapter = ChooseCloudsRecyclerAdapter(this@ChooseCloudFragment)
+            adapter = chooseCloudsRecyclerAdapter
         }
     }
 
@@ -67,15 +74,23 @@ class ChooseCloudFragment : Fragment(), CloudsRecyclerAdapter.Interaction {
             println("DEBUG: DataState: $dataState")
 
             // dataStateHandler is the MainActivity implementing DataStateListener
-            // to handle loading (progress bar) or error (showing message)
+            // to handle loading (progress bar) or error (showing message) or navigation (handling bundle)
             dataStateHandler.onDataStateChange(dataState)
 
             // Handle Data<T>
             dataState.data?.let { event ->
                 event.getContentIfNotHandled()?.let { chooseCloudViewState ->
-                    chooseCloudViewState.cloudImages?.let { clouds ->
-                        // set CloudImages data
-                        viewModel.setCloudImagesListData(clouds)
+                    with(chooseCloudViewState) {
+                        cloudImages?.let { clouds ->
+                            // set CloudImages data
+                            viewModel.setCloudImagesListData(clouds)
+                        }
+                        cloudToEdit?.let {
+                            findNavController().navigate(
+                                R.id.actionEditCloud,
+                                EditCloudViewModel.createArguments(it)
+                            )
+                        }
                     }
                 }
             }
@@ -84,13 +99,17 @@ class ChooseCloudFragment : Fragment(), CloudsRecyclerAdapter.Interaction {
         viewModel.viewState.observe(viewLifecycleOwner, Observer { viewState ->
             viewState.cloudImages?.let {
                 println("DEBUG: Setting cloud images to RecyclerView: $it")
-                cloudsRecyclerAdapter.submitList(it)
+                chooseCloudsRecyclerAdapter.submitList(it)
             }
         })
     }
 
     fun triggerLoadCloudsEvent() {
-        viewModel.setStateEvent(ChooseCloudStateEvent.getCloudImages())
+        viewModel.setStateEvent(ChooseCloudStateEvent.loadCloudImages())
+    }
+
+    fun triggerCloudClickedEvent(cloud: CaptionedCloud) {
+        viewModel.setStateEvent(ChooseCloudStateEvent.clickCloudImage(cloud))
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -101,6 +120,7 @@ class ChooseCloudFragment : Fragment(), CloudsRecyclerAdapter.Interaction {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.action_get_clouds -> triggerLoadCloudsEvent()
+            android.R.id.home -> requireActivity().supportFragmentManager.popBackStackImmediate()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -110,11 +130,7 @@ class ChooseCloudFragment : Fragment(), CloudsRecyclerAdapter.Interaction {
         try {
             dataStateHandler = context as DataStateListener
         } catch (e: ClassCastException) {
-            println("DEBUG: $context must implement DataStateListener")
+            println("DEBUG: ${e.message}")
         }
-    }
-
-    companion object {
-        fun newInstance() = ChooseCloudFragment()
     }
 }

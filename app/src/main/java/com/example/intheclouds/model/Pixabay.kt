@@ -4,7 +4,7 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 
-object Cumulus {
+object Pixabay {
 
     data class Response(
 

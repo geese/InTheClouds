@@ -1,15 +1,13 @@
 package com.example.intheclouds.ui.choosecloud
 
-import android.widget.Toast
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
-import com.example.intheclouds.model.Cumulus
-import com.example.intheclouds.repository.choosecloud.ChooseCloudRepository
+import android.os.Bundle
+import androidx.lifecycle.*
+import com.example.intheclouds.model.Pixabay
+import com.example.intheclouds.repository.ChooseCloudRepository
 import com.example.intheclouds.ui.choosecloud.state.ChooseCloudStateEvent
 import com.example.intheclouds.ui.choosecloud.state.ChooseCloudViewState
 import com.example.intheclouds.util.AbsentLiveData
+import com.example.intheclouds.util.Constants
 import com.example.intheclouds.util.DataState
 
 class ChooseCloudViewModel : ViewModel() {
@@ -35,14 +33,20 @@ class ChooseCloudViewModel : ViewModel() {
         println("DEBUG: New StateEvent detected: $stateEvent")
         when(stateEvent){
 
-            is ChooseCloudStateEvent.getCloudImages -> {
-
+            is ChooseCloudStateEvent.loadCloudImages -> {
                 println("DEBUG: getting cloud images")
                 return ChooseCloudRepository.getCloudImages()
             }
 
             is ChooseCloudStateEvent.clickCloudImage -> {
-                return AbsentLiveData.create()
+                println("DEBUG: cloud clicked")
+                var extras = Bundle()
+                extras.putParcelable(Constants.ARG_CAPTIONED_CLOUD, stateEvent.cloud)
+                return MediatorLiveData<DataState<ChooseCloudViewState>>().apply {
+                    value = DataState.data(
+                        data = ChooseCloudViewState(cloudToEdit = stateEvent.cloud)
+                    )
+                }
             }
 
             is ChooseCloudStateEvent.None ->{
@@ -51,7 +55,7 @@ class ChooseCloudViewModel : ViewModel() {
         }
     }
 
-    fun setCloudImagesListData(clouds: ArrayList<Cumulus.CloudImage>) {
+    fun setCloudImagesListData(clouds: ArrayList<Pixabay.CloudImage>) {
         val update = getCurrentViewStateOrNew()
         update.cloudImages = clouds
         _viewState.value = update

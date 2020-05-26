@@ -1,11 +1,14 @@
 package com.example.intheclouds.ui.choosecloud.state
 
-import com.example.intheclouds.model.Cumulus
+import com.example.intheclouds.model.Pixabay
+import com.example.intheclouds.room.CaptionedCloud
 
 /**
  * The ViewState is a wrapper class around
  * all the  data objects in the View.
  */
 data class ChooseCloudViewState (
-    var cloudImages: ArrayList<Cumulus.CloudImage>? = null
+    var cloudImages: ArrayList<Pixabay.CloudImage>? = null,
+    val cloudToEdit: CaptionedCloud? = null,
+    val newCloud: Boolean = false
 )
