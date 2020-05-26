@@ -1,7 +1,7 @@
 package com.example.intheclouds.api
 
 import androidx.lifecycle.LiveData
-import com.example.intheclouds.model.Cumulus
+import com.example.intheclouds.model.Pixabay
 import com.example.intheclouds.util.Constants
 import com.example.intheclouds.util.GenericApiResponse
 import retrofit2.http.GET
@@ -19,5 +19,5 @@ interface ApiService {
         @Query("q") q: String = "fluffy+clouds",
         @Query("image_type") imageType: String = "photo",
         @Query("per_page") perPage: Int = 200
-    ): LiveData<GenericApiResponse<Cumulus.Response>>
+    ): LiveData<GenericApiResponse<Pixabay.Response>>
 }

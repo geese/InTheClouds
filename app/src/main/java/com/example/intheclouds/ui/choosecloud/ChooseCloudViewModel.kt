@@ -2,15 +2,13 @@ package com.example.intheclouds.ui.choosecloud
 
 import android.os.Bundle
 import androidx.lifecycle.*
-import com.example.intheclouds.model.Cumulus
+import com.example.intheclouds.model.Pixabay
 import com.example.intheclouds.repository.ChooseCloudRepository
 import com.example.intheclouds.ui.choosecloud.state.ChooseCloudStateEvent
 import com.example.intheclouds.ui.choosecloud.state.ChooseCloudViewState
-import com.example.intheclouds.ui.editcloud.EditCloudFragment
 import com.example.intheclouds.util.AbsentLiveData
 import com.example.intheclouds.util.Constants
 import com.example.intheclouds.util.DataState
-import com.example.intheclouds.util.NavigationExtra
 
 class ChooseCloudViewModel : ViewModel() {
 
@@ -46,7 +44,7 @@ class ChooseCloudViewModel : ViewModel() {
                 extras.putParcelable(Constants.ARG_CAPTIONED_CLOUD, stateEvent.cloud)
                 return MediatorLiveData<DataState<ChooseCloudViewState>>().apply {
                     value = DataState.data(
-                        navigationExtra =  NavigationExtra(EditCloudFragment::class.java.simpleName, extras)
+                        data = ChooseCloudViewState(cloudToEdit = stateEvent.cloud)
                     )
                 }
             }
@@ -57,7 +55,7 @@ class ChooseCloudViewModel : ViewModel() {
         }
     }
 
-    fun setCloudImagesListData(clouds: ArrayList<Cumulus.CloudImage>) {
+    fun setCloudImagesListData(clouds: ArrayList<Pixabay.CloudImage>) {
         val update = getCurrentViewStateOrNew()
         update.cloudImages = clouds
         _viewState.value = update

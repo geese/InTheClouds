@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.intheclouds.R
 import com.example.intheclouds.room.CaptionedCloud
-import com.example.intheclouds.ui.choosecloud.ChooseCloudsRecyclerAdapter
 import kotlinx.android.synthetic.main.captioned_cloud_row_item.view.*
 
 class CaptionedCloudsRecyclerAdapter(private val interaction: Interaction? = null) :
@@ -60,7 +59,7 @@ class CaptionedCloudsRecyclerAdapter(private val interaction: Interaction? = nul
     class CloudImageViewHolder
     constructor(
         itemView: View,
-        private val interaction: CaptionedCloudsRecyclerAdapter.Interaction?
+        private val interaction: Interaction?
     ) : RecyclerView.ViewHolder(itemView) {
 
         fun bind(item: CaptionedCloud) = with(itemView) {

@@ -7,6 +7,8 @@
     <color name="displayBackgroundDark">#00052a</color>
     <color name="displayBackgroundLight">#eceff1</color>
 
+    <color name="materialGreen700">#388e3c</color>
+
 </resources>
 
 <!-- #001525 (with cyan) -->

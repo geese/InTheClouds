@@ -3,12 +3,14 @@ package com.example.intheclouds.ui.editcloud
 import android.content.Context
 import android.os.Bundle
 import android.view.*
-import androidx.fragment.app.Fragment
+import android.view.inputmethod.EditorInfo
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
-
 import com.example.intheclouds.R
 import com.example.intheclouds.room.CaptionedCloud
 import com.example.intheclouds.ui.DataStateListener
@@ -16,14 +18,12 @@ import com.example.intheclouds.ui.editcloud.state.EditCloudStateEvent
 import com.example.intheclouds.ui.editcloud.state.EditCloudStateEvent.SaveCaptionedCloud
 import com.example.intheclouds.util.Constants
 import kotlinx.android.synthetic.main.edit_cloud_fragment.*
-import java.lang.ClassCastException
 
 class EditCloudFragment : Fragment() {
 
     private lateinit var viewModel: EditCloudViewModel
 
     lateinit var dataStateHandler: DataStateListener
-    private lateinit var editCloudFragmentListener: EditCloudFragmentListener
 
     private lateinit var captionedCloud: CaptionedCloud
     private var isNewCloud: Boolean = false
@@ -32,7 +32,6 @@ class EditCloudFragment : Fragment() {
         super.onAttach(context)
         try {
             dataStateHandler = context as DataStateListener
-            editCloudFragmentListener = context as EditCloudFragmentListener
         } catch (e: ClassCastException) {
             println("DEBUG: ${e.message}")
         }
@@ -65,9 +64,7 @@ class EditCloudFragment : Fragment() {
             R.id.action_delete_cloud -> {
                 triggerDeleteCaptionedCloudEvent()
             }
-            android.R.id.home -> editCloudFragmentListener.goHome()
         }
-
         return super.onOptionsItemSelected(item)
     }
 
@@ -86,13 +83,25 @@ class EditCloudFragment : Fragment() {
             .load(captionedCloud.byteArray)
             .into(edit_cloud_image_view)
 
-        captionedCloud.caption?.let { editText.setText(it) }
+        captionedCloud.caption.let { editText.setText(it) }
 
         subscribeObservers()
 
         save_button.setOnClickListener {
             triggerSaveCaptionedCloudEvent()
         }
+
+        editText.setOnEditorActionListener(object: TextView.OnEditorActionListener {
+            override fun onEditorAction(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
+                return when {
+                    actionId == EditorInfo.IME_ACTION_DONE -> {
+                        triggerSaveCaptionedCloudEvent()
+                        true
+                    }
+                    else -> false
+                }
+            }
+        })
     }
 
     fun subscribeObservers() {
@@ -107,8 +116,12 @@ class EditCloudFragment : Fragment() {
             // Handle Data<T>
             dataState.data?.let { event->
                 event.getContentIfNotHandled()?.let { editCloudViewState ->
-                    editCloudViewState.savedCloudId?.let { editCloudFragmentListener.onCloudSaved() }
-                    editCloudViewState.deletedCloudId?.let { editCloudFragmentListener.onCloudDeleted() }
+                    with(editCloudViewState) {
+                        when {
+                            isSaved -> findNavController().navigate(R.id.actionCaptionedCloud)
+                            isDeleted -> findNavController().navigate(R.id.actionCaptionedCloud)
+                        }
+                    }
                 }
             }
         })
@@ -121,14 +134,5 @@ class EditCloudFragment : Fragment() {
 
     private fun triggerDeleteCaptionedCloudEvent() {
         viewModel.setStateEvent(EditCloudStateEvent.DeleteCaptionedCloud(captionedCloud))
-    }
-
-    interface EditCloudFragmentListener {
-        fun onCloudSaved()
-        fun onCloudDeleted()
-        fun goHome()
-    }
-    companion object {
-        fun newInstance() = EditCloudFragment()
     }
 }

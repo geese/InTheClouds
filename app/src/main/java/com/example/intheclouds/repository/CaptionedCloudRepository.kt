@@ -1,6 +1,7 @@
 package com.example.intheclouds.repository
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.intheclouds.room.CaptionedCloud
 import com.example.intheclouds.room.CloudDao
@@ -14,17 +15,16 @@ class CaptionedCloudRepository(private val cloudDao: CloudDao) {
 
     fun allClouds(): LiveData<DataState<CaptionedCloudViewState>> {
 
-        val clouds = runBlocking(Dispatchers.IO) {
+        val allClouds = runBlocking(Dispatchers.IO) {
             cloudDao.getAll()
         }
-        var dataState = DataState.data(
-            data = CaptionedCloudViewState(
-                clouds = clouds
+        return MediatorLiveData<DataState<CaptionedCloudViewState>>().apply {
+            value = DataState.data(
+                data = CaptionedCloudViewState(
+                    clouds = allClouds
+                )
             )
-        )
-        var liveData = MutableLiveData<DataState<CaptionedCloudViewState>>()
-        liveData.postValue(dataState)
-        return liveData
+        }
     }
 
     fun insertOrUpdate(cloud: CaptionedCloud){
@@ -53,10 +53,6 @@ class CaptionedCloudRepository(private val cloudDao: CloudDao) {
         return runBlocking(Dispatchers.IO) {
             cloudDao.update(cloud)
         }
-    }
-
-    fun getCloud(id: Long): CaptionedCloud {  //todo DataState
-        return cloudDao.getCloud(id)
     }
 
 }

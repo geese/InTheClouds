@@ -7,16 +7,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-
 import com.example.intheclouds.R
 import com.example.intheclouds.room.CaptionedCloud
-import com.example.intheclouds.ui.captionedclouds.state.CaptionedCloudStateEvent
-import com.example.intheclouds.ui.choosecloud.ChooseCloudFragment
-import com.example.intheclouds.ui.choosecloud.state.ChooseCloudStateEvent
-import kotlinx.android.synthetic.main.captioned_clouds_fragment.*
 import com.example.intheclouds.ui.DataStateListener
-import java.lang.ClassCastException
+import com.example.intheclouds.ui.captionedclouds.state.CaptionedCloudStateEvent
+import com.example.intheclouds.ui.editcloud.EditCloudViewModel
+import kotlinx.android.synthetic.main.captioned_clouds_fragment.*
 
 class CaptionedCloudsFragment : Fragment(), CaptionedCloudsRecyclerAdapter.Interaction {
 
@@ -26,7 +24,6 @@ class CaptionedCloudsFragment : Fragment(), CaptionedCloudsRecyclerAdapter.Inter
 
     private lateinit var viewModel: CaptionedCloudsViewModel
 
-    lateinit var captionedCloudsFragmentListener: CaptionedCloudsFragmentListener
     lateinit var dataStateHandler: DataStateListener
 
     private lateinit var captionedCloudsRecyclerAdapter: CaptionedCloudsRecyclerAdapter
@@ -64,7 +61,6 @@ class CaptionedCloudsFragment : Fragment(), CaptionedCloudsRecyclerAdapter.Inter
         super.onAttach(context)
         try {
             dataStateHandler = context as DataStateListener
-            captionedCloudsFragmentListener = context as CaptionedCloudsFragmentListener
         } catch (e: ClassCastException) {
             println("DEBUG: ${e.message}")
         }
@@ -77,7 +73,7 @@ class CaptionedCloudsFragment : Fragment(), CaptionedCloudsRecyclerAdapter.Inter
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
-            R.id.action_add_cloud -> captionedCloudsFragmentListener.onAddCloudClicked()
+            R.id.action_add_cloud -> findNavController().navigate(R.id.actionChooseCloud)
         }
         return super.onOptionsItemSelected(item)
     }
@@ -98,7 +94,12 @@ class CaptionedCloudsFragment : Fragment(), CaptionedCloudsRecyclerAdapter.Inter
                         viewModel.setCloudImagesListData(clouds)
                     }
                     captionedCloudViewState.cloudToEdit?.let {
-                        captionedCloudsFragmentListener.onCloudClicked(it, newCloud = false)
+                        // navigate to EditCloudFragment?
+                        findNavController().navigate(
+                            R.id.actionEditCloud,
+                            EditCloudViewModel.createArguments(it)
+                        )
+                        // captionedCloudsFragmentListener.onCloudClicked(it, newCloud = false)
                     }
                 }
             }
@@ -128,14 +129,5 @@ class CaptionedCloudsFragment : Fragment(), CaptionedCloudsRecyclerAdapter.Inter
 
     fun triggerCloudClickedEvent(cloud: CaptionedCloud) {
         viewModel.setStateEvent(CaptionedCloudStateEvent.clickCloudImage(cloud))
-    }
-
-    interface CaptionedCloudsFragmentListener {
-        fun onAddCloudClicked()
-        fun onCloudClicked(cloud: CaptionedCloud?, newCloud: Boolean)
-    }
-
-    companion object {
-        fun newInstance() = CaptionedCloudsFragment()
     }
 }

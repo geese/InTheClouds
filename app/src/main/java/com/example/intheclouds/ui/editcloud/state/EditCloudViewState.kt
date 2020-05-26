@@ -7,6 +7,6 @@ import com.example.intheclouds.room.CaptionedCloud
  * all the  data objects in the View.
  */
 data class EditCloudViewState (
-    val savedCloudId: Int? = null,
-    val deletedCloudId: Long? = null
+    val isSaved: Boolean = false,
+    val isDeleted: Boolean = false
 )

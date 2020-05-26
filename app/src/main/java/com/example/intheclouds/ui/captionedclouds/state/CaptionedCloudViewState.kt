@@ -1,6 +1,5 @@
 package com.example.intheclouds.ui.captionedclouds.state
 
-import com.example.intheclouds.model.Cumulus
 import com.example.intheclouds.room.CaptionedCloud
 
 /**

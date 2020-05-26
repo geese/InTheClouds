@@ -46,13 +46,6 @@ class Event<T>(private val content: T) {
             }
             return null
         }
-
-        fun navigationEvent(extra: NavigationExtra?): Event<NavigationExtra>? {
-            extra?.let {
-                return Event(it)
-            }
-            return null
-        }
     }
 
 

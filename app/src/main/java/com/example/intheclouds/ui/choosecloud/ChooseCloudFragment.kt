@@ -3,20 +3,18 @@ package com.example.intheclouds.ui.choosecloud
 import android.content.Context
 import android.os.Bundle
 import android.view.*
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-
 import com.example.intheclouds.R
 import com.example.intheclouds.room.CaptionedCloud
 import com.example.intheclouds.ui.DataStateListener
 import com.example.intheclouds.ui.choosecloud.state.ChooseCloudStateEvent
-import com.example.intheclouds.ui.main.MainActivity
+import com.example.intheclouds.ui.editcloud.EditCloudViewModel
 import kotlinx.android.synthetic.main.choose_cloud_fragment.*
-import java.lang.ClassCastException
 
 class ChooseCloudFragment : Fragment(), ChooseCloudsRecyclerAdapter.Interaction {
 
@@ -27,7 +25,6 @@ class ChooseCloudFragment : Fragment(), ChooseCloudsRecyclerAdapter.Interaction 
     lateinit var viewModel: ChooseCloudViewModel
 
     lateinit var dataStateHandler: DataStateListener
-    lateinit var chooseCloudFragmentListener: ChooseCloudFragmentListener
 
     lateinit var chooseCloudsRecyclerAdapter: ChooseCloudsRecyclerAdapter
 
@@ -88,6 +85,12 @@ class ChooseCloudFragment : Fragment(), ChooseCloudsRecyclerAdapter.Interaction 
                             // set CloudImages data
                             viewModel.setCloudImagesListData(clouds)
                         }
+                        cloudToEdit?.let {
+                            findNavController().navigate(
+                                R.id.actionEditCloud,
+                                EditCloudViewModel.createArguments(it)
+                            )
+                        }
                     }
                 }
             }
@@ -126,17 +129,8 @@ class ChooseCloudFragment : Fragment(), ChooseCloudsRecyclerAdapter.Interaction 
         super.onAttach(context)
         try {
             dataStateHandler = context as DataStateListener
-            chooseCloudFragmentListener = context as ChooseCloudFragmentListener
         } catch (e: ClassCastException) {
             println("DEBUG: ${e.message}")
         }
-    }
-
-    interface ChooseCloudFragmentListener {
-        fun onCloudClicked(cloud: CaptionedCloud? = null, newCloud: Boolean)
-    }
-
-    companion object {
-        fun newInstance() = ChooseCloudFragment()
     }
 }

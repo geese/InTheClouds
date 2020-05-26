@@ -8,11 +8,9 @@ import com.example.intheclouds.room.CloudsDatabase
 import com.example.intheclouds.room.CaptionedCloud
 import com.example.intheclouds.ui.captionedclouds.state.CaptionedCloudStateEvent
 import com.example.intheclouds.ui.captionedclouds.state.CaptionedCloudViewState
-import com.example.intheclouds.ui.editcloud.EditCloudFragment
 import com.example.intheclouds.util.AbsentLiveData
 import com.example.intheclouds.util.Constants
 import com.example.intheclouds.util.DataState
-import com.example.intheclouds.util.NavigationExtra
 
 class CaptionedCloudsViewModel(application: Application): AndroidViewModel(application) {
 
@@ -40,7 +38,6 @@ class CaptionedCloudsViewModel(application: Application): AndroidViewModel(appli
 
     fun handleStateEvent(stateEvent: CaptionedCloudStateEvent): LiveData<DataState<CaptionedCloudViewState>>{
         println("DEBUG: New StateEvent detected: $stateEvent")
-        var something = EditCloudFragment::class.java
         when(stateEvent){
 
             is CaptionedCloudStateEvent.loadCloudImages -> {
@@ -55,7 +52,7 @@ class CaptionedCloudsViewModel(application: Application): AndroidViewModel(appli
                 extras.putParcelable(Constants.ARG_CAPTIONED_CLOUD, stateEvent.cloud)
                 return MediatorLiveData<DataState<CaptionedCloudViewState>>().apply {
                     value = DataState.data(
-                        navigationExtra = NavigationExtra(EditCloudFragment::class.java.simpleName, extras)
+                        data = CaptionedCloudViewState(cloudToEdit = stateEvent.cloud)
                     )
                 }
             }

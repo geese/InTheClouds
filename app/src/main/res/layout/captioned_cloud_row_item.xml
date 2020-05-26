@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/displayBackgroundDark"
     android:paddingTop="20dp"
-    android:paddingBottom="32dp"
+    android:paddingBottom="28dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:text="Caption!"
         android:fontFamily="@font/amita"
-        android:background="#77212121"
+        android:background="#491a237e"
         android:textAlignment="center"
         android:textSize="24sp"
         android:textColor="@android:color/white"
@@ -33,3 +33,4 @@
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 <!--002030-->
+<!--44333333-->

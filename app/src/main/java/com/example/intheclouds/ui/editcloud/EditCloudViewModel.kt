@@ -1,16 +1,16 @@
 package com.example.intheclouds.ui.editcloud
 
 import android.app.Application
+import android.os.Bundle
 import androidx.lifecycle.*
 import com.example.intheclouds.repository.CaptionedCloudRepository
+import com.example.intheclouds.room.CaptionedCloud
 import com.example.intheclouds.room.CloudsDatabase
-import com.example.intheclouds.ui.captionedclouds.CaptionedCloudsFragment
-import com.example.intheclouds.ui.choosecloud.state.ChooseCloudStateEvent
 import com.example.intheclouds.ui.editcloud.state.EditCloudStateEvent
 import com.example.intheclouds.ui.editcloud.state.EditCloudViewState
 import com.example.intheclouds.util.AbsentLiveData
+import com.example.intheclouds.util.Constants
 import com.example.intheclouds.util.DataState
-import com.example.intheclouds.util.NavigationExtra
 
 class EditCloudViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -18,10 +18,6 @@ class EditCloudViewModel(application: Application) : AndroidViewModel(applicatio
         CloudsDatabase.getDatabase(application, viewModelScope)
             .cloudDao()
     )
-
-   /* fun insert(cloud: CaptionedCloud) = viewModelScope.launch(Dispatchers.IO) {
-        captionedCloudRepository.insert(cloud)
-    }*/
 
     // triggers the different actions to take
     private val _stateEvent: MutableLiveData<EditCloudStateEvent> = MutableLiveData()
@@ -50,7 +46,7 @@ class EditCloudViewModel(application: Application) : AndroidViewModel(applicatio
                 return MediatorLiveData<DataState<EditCloudViewState>>().apply {
                     value = DataState.data(
                         message = "Cloud Saved!",
-                        navigationExtra = NavigationExtra(CaptionedCloudsFragment::class.java.simpleName)
+                        data = EditCloudViewState(isSaved = true)
                     )
                 }
             }
@@ -60,7 +56,7 @@ class EditCloudViewModel(application: Application) : AndroidViewModel(applicatio
                 return MediatorLiveData<DataState<EditCloudViewState>>().apply {
                     value = DataState.data(
                         message = "Cloud Deleted!",
-                        navigationExtra = NavigationExtra(CaptionedCloudsFragment::class.java.simpleName)
+                        data = EditCloudViewState(isDeleted = true)
                     )
                 }
             }
@@ -73,5 +69,15 @@ class EditCloudViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun setStateEvent(event: EditCloudStateEvent) {
         _stateEvent.value = event
+    }
+
+    companion object {
+
+        fun createArguments(cloud: CaptionedCloud): Bundle {
+            val bundle = Bundle()
+            bundle.putParcelable(Constants.ARG_CAPTIONED_CLOUD, cloud)
+
+            return bundle
+        }
     }
 }

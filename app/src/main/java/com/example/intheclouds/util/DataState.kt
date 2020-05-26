@@ -7,8 +7,7 @@ import android.os.Bundle
 data class DataState<T>(
     var message: Event<String>? = null,
     var loading: Boolean = false,
-    var data: Event<T>? = null,
-    var navigation: Event<NavigationExtra>? = null
+    var data: Event<T>? = null
 )
 {
     companion object {
@@ -19,8 +18,7 @@ data class DataState<T>(
             return DataState(
                 message = Event(message),
                 loading = false,
-                data = null,
-                navigation = null
+                data = null
             )
         }
 
@@ -30,21 +28,18 @@ data class DataState<T>(
             return DataState(
                 message = null,
                 loading = isLoading,
-                data = null,
-                navigation = null
+                data = null
             )
         }
 
         fun <T> data(
             message: String? = null,
-            data: T? = null,
-            navigationExtra: NavigationExtra? = null
+            data: T? = null
         ): DataState<T> {
             return DataState(
                 message = Event.messageEvent(message),
                 loading = false,
-                data = Event.dataEvent(data),
-                navigation = Event.navigationEvent(navigationExtra)
+                data = Event.dataEvent(data)
             )
         }
     }

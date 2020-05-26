@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.intheclouds.R
-import com.example.intheclouds.model.Cumulus
+import com.example.intheclouds.model.Pixabay
 import com.example.intheclouds.room.CaptionedCloud
 import com.example.intheclouds.util.toByteArray
 import kotlinx.android.synthetic.main.cloud_row_item.view.*
@@ -18,13 +18,13 @@ import kotlinx.android.synthetic.main.cloud_row_item.view.*
 class ChooseCloudsRecyclerAdapter(private val interaction: Interaction? = null) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
-    val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Cumulus.CloudImage>() {
+    val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Pixabay.CloudImage>() {
 
-        override fun areItemsTheSame(oldItem: Cumulus.CloudImage, newItem: Cumulus.CloudImage): Boolean {
+        override fun areItemsTheSame(oldItem: Pixabay.CloudImage, newItem: Pixabay.CloudImage): Boolean {
             return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: Cumulus.CloudImage, newItem: Cumulus.CloudImage): Boolean {
+        override fun areContentsTheSame(oldItem: Pixabay.CloudImage, newItem: Pixabay.CloudImage): Boolean {
             return oldItem == newItem
         }
     }
@@ -56,7 +56,7 @@ class ChooseCloudsRecyclerAdapter(private val interaction: Interaction? = null) 
         return differ.currentList.size
     }
 
-    fun submitList(list: List<Cumulus.CloudImage>) {
+    fun submitList(list: List<Pixabay.CloudImage>) {
         differ.submitList(list)
     }
 
@@ -66,7 +66,7 @@ class ChooseCloudsRecyclerAdapter(private val interaction: Interaction? = null) 
         private val interaction: Interaction?
     ) : RecyclerView.ViewHolder(itemView) {
 
-        fun bind(item: Cumulus.CloudImage) = with(itemView) {
+        fun bind(item: Pixabay.CloudImage) = with(itemView) {
             this.setOnClickListener{
                 var bitmap = ((itemView.findViewById(R.id.choose_cloud_image_view) as ImageView)
                     .drawable as BitmapDrawable)
