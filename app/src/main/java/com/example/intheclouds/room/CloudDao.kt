@@ -13,7 +13,7 @@ interface CloudDao {
     suspend fun getAll(): List<CaptionedCloud>
 
     @Query("SELECT * FROM captioned_cloud WHERE id = :cloudId")
-    fun getCaptionedCloud(cloudId: Long): LiveData<CaptionedCloud>
+    fun getCloud(cloudId: Long): CaptionedCloud
 
     @Insert
     fun insertAll(vararg captionedClouds: CaptionedCloud)

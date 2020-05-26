@@ -77,7 +77,7 @@ class ChooseCloudFragment : Fragment(), ChooseCloudsRecyclerAdapter.Interaction 
             println("DEBUG: DataState: $dataState")
 
             // dataStateHandler is the MainActivity implementing DataStateListener
-            // to handle loading (progress bar) or error (showing message)
+            // to handle loading (progress bar) or error (showing message) or navigation (handling bundle)
             dataStateHandler.onDataStateChange(dataState)
 
             // Handle Data<T>
@@ -87,9 +87,6 @@ class ChooseCloudFragment : Fragment(), ChooseCloudsRecyclerAdapter.Interaction 
                         cloudImages?.let { clouds ->
                             // set CloudImages data
                             viewModel.setCloudImagesListData(clouds)
-                        }
-                        cloudToEdit?.let {
-                            chooseCloudFragmentListener.onCloudClicked(cloud = it, newCloud = true)
                         }
                     }
                 }

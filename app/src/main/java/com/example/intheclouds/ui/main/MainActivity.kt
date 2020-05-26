@@ -13,8 +13,10 @@ import com.example.intheclouds.ui.captionedclouds.CaptionedCloudsFragment
 import com.example.intheclouds.ui.captionedclouds.CaptionedCloudsFragment.CaptionedCloudsFragmentListener
 import com.example.intheclouds.ui.choosecloud.*
 import com.example.intheclouds.ui.choosecloud.ChooseCloudFragment.ChooseCloudFragmentListener
+import com.example.intheclouds.ui.choosecloud.state.ChooseCloudViewState
 import com.example.intheclouds.ui.editcloud.EditCloudFragment
 import com.example.intheclouds.ui.editcloud.EditCloudFragment.EditCloudFragmentListener
+import com.example.intheclouds.util.Constants
 import com.example.intheclouds.util.DataState
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -42,9 +44,7 @@ class MainActivity :
     }
 
     override fun onCloudClicked(cloud: CaptionedCloud?, newCloud: Boolean) {
-        cloud?.let {
-            showEditCloudFragment(cloud, newCloud)
-        }
+
     }
 
     override fun onCloudSaved() {
@@ -73,6 +73,16 @@ class MainActivity :
             dataState.message?.let {  event ->
                 event.getContentIfNotHandled()?.let { message ->
                     showToast(message)
+                }
+            }
+
+            // handle navigation
+            dataState.navigation?.let { event ->
+                event.getContentIfNotHandled()?.let { extra ->
+                   when (extra.destination) {
+                       EditCloudFragment::class.java.simpleName -> showEditCloudFragment(extra.bundle)
+                       CaptionedCloudsFragment::class.java.simpleName -> showCaptionedCloudsFragment()
+                   }
                 }
             }
         }
@@ -104,9 +114,11 @@ class MainActivity :
             .commit()
     }
 
-    private fun showEditCloudFragment(cloud: CaptionedCloud, newCloud: Boolean) {
+    private fun showEditCloudFragment(extras: Bundle?) {
+        var fragment = EditCloudFragment.newInstance()
+        fragment.arguments = extras
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, EditCloudFragment.newInstance(cloud, newCloud))
+            .replace(R.id.fragment_container, fragment)
             .addToBackStack("edit_cloud")
             .commit()
     }

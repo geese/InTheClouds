@@ -14,12 +14,9 @@ import com.example.intheclouds.room.CaptionedCloud
 import com.example.intheclouds.ui.DataStateListener
 import com.example.intheclouds.ui.editcloud.state.EditCloudStateEvent
 import com.example.intheclouds.ui.editcloud.state.EditCloudStateEvent.SaveCaptionedCloud
-import kotlinx.android.synthetic.main.captioned_cloud_row_item.*
+import com.example.intheclouds.util.Constants
 import kotlinx.android.synthetic.main.edit_cloud_fragment.*
 import java.lang.ClassCastException
-
-private const val ARG_CAPTIONED_CLOUD = "captioned_cloud"
-private const val ARG_NEW_CLOUD = "new_cloud"
 
 class EditCloudFragment : Fragment() {
 
@@ -29,7 +26,7 @@ class EditCloudFragment : Fragment() {
     private lateinit var editCloudFragmentListener: EditCloudFragmentListener
 
     private lateinit var captionedCloud: CaptionedCloud
-    private var newCloud: Boolean = false
+    private var isNewCloud: Boolean = false
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -40,8 +37,8 @@ class EditCloudFragment : Fragment() {
             println("DEBUG: ${e.message}")
         }
 
-        arguments?.getParcelable<CaptionedCloud>(ARG_CAPTIONED_CLOUD)?.let { captionedCloud = it }
-        arguments?.getBoolean(ARG_NEW_CLOUD)?.let { newCloud = it }
+        arguments?.getParcelable<CaptionedCloud>(Constants.ARG_CAPTIONED_CLOUD)?.let { captionedCloud = it }
+        isNewCloud = captionedCloud.id == 0L
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -58,7 +55,7 @@ class EditCloudFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        if (!newCloud) {
+        if (!isNewCloud) {
             inflater.inflate(R.menu.edit_cloud_menu, menu)
         }
     }
@@ -67,7 +64,6 @@ class EditCloudFragment : Fragment() {
         when(item.itemId) {
             R.id.action_delete_cloud -> {
                 triggerDeleteCaptionedCloudEvent()
-                requireActivity().supportFragmentManager.popBackStackImmediate()
             }
             android.R.id.home -> editCloudFragmentListener.goHome()
         }
@@ -133,11 +129,6 @@ class EditCloudFragment : Fragment() {
         fun goHome()
     }
     companion object {
-        fun newInstance(cloud: CaptionedCloud, newCloud: Boolean) = EditCloudFragment().apply {
-            arguments = Bundle().apply {
-                putParcelable(ARG_CAPTIONED_CLOUD, cloud)
-                putBoolean(ARG_NEW_CLOUD, newCloud)
-            }
-        }
+        fun newInstance() = EditCloudFragment()
     }
 }

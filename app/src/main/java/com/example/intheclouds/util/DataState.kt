@@ -1,11 +1,14 @@
 package com.example.intheclouds.util
 
+import android.os.Bundle
+
 // this class is modeled after a class named Resource in Google samples
 
 data class DataState<T>(
     var message: Event<String>? = null,
     var loading: Boolean = false,
-    var data: Event<T>? = null
+    var data: Event<T>? = null,
+    var navigation: Event<NavigationExtra>? = null
 )
 {
     companion object {
@@ -16,7 +19,8 @@ data class DataState<T>(
             return DataState(
                 message = Event(message),
                 loading = false,
-                data = null
+                data = null,
+                navigation = null
             )
         }
 
@@ -26,18 +30,21 @@ data class DataState<T>(
             return DataState(
                 message = null,
                 loading = isLoading,
-                data = null
+                data = null,
+                navigation = null
             )
         }
 
         fun <T> data(
             message: String? = null,
-            data: T? = null
+            data: T? = null,
+            navigationExtra: NavigationExtra? = null
         ): DataState<T> {
             return DataState(
                 message = Event.messageEvent(message),
                 loading = false,
-                data = Event.dataEvent(data)
+                data = Event.dataEvent(data),
+                navigation = Event.navigationEvent(navigationExtra)
             )
         }
     }

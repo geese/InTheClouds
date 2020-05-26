@@ -15,6 +15,7 @@ import com.example.intheclouds.ui.captionedclouds.state.CaptionedCloudStateEvent
 import com.example.intheclouds.ui.choosecloud.ChooseCloudFragment
 import com.example.intheclouds.ui.choosecloud.state.ChooseCloudStateEvent
 import kotlinx.android.synthetic.main.captioned_clouds_fragment.*
+import com.example.intheclouds.ui.DataStateListener
 import java.lang.ClassCastException
 
 class CaptionedCloudsFragment : Fragment(), CaptionedCloudsRecyclerAdapter.Interaction {
@@ -26,6 +27,7 @@ class CaptionedCloudsFragment : Fragment(), CaptionedCloudsRecyclerAdapter.Inter
     private lateinit var viewModel: CaptionedCloudsViewModel
 
     lateinit var captionedCloudsFragmentListener: CaptionedCloudsFragmentListener
+    lateinit var dataStateHandler: DataStateListener
 
     private lateinit var captionedCloudsRecyclerAdapter: CaptionedCloudsRecyclerAdapter
 
@@ -61,6 +63,7 @@ class CaptionedCloudsFragment : Fragment(), CaptionedCloudsRecyclerAdapter.Inter
     override fun onAttach(context: Context) {
         super.onAttach(context)
         try {
+            dataStateHandler = context as DataStateListener
             captionedCloudsFragmentListener = context as CaptionedCloudsFragmentListener
         } catch (e: ClassCastException) {
             println("DEBUG: ${e.message}")
@@ -83,6 +86,10 @@ class CaptionedCloudsFragment : Fragment(), CaptionedCloudsRecyclerAdapter.Inter
 
         viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
             println("DEBUG: DataState: $dataState")
+
+            // dataStateHandler is the MainActivity implementing DataStateListener
+            // to handle loading (progress bar) or error (showing message) or navigation (handling bundle)
+            dataStateHandler.onDataStateChange(dataState)
 
             // Handle Data<T>
             dataState.data?.let { event ->

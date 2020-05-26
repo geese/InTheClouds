@@ -9,5 +9,6 @@ import com.example.intheclouds.room.CaptionedCloud
  */
 data class ChooseCloudViewState (
     var cloudImages: ArrayList<Cumulus.CloudImage>? = null,
-    val cloudToEdit: CaptionedCloud? = null
+    val cloudToEdit: CaptionedCloud? = null,
+    val newCloud: Boolean = false
 )

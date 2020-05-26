@@ -4,11 +4,13 @@ import android.app.Application
 import androidx.lifecycle.*
 import com.example.intheclouds.repository.CaptionedCloudRepository
 import com.example.intheclouds.room.CloudsDatabase
+import com.example.intheclouds.ui.captionedclouds.CaptionedCloudsFragment
 import com.example.intheclouds.ui.choosecloud.state.ChooseCloudStateEvent
 import com.example.intheclouds.ui.editcloud.state.EditCloudStateEvent
 import com.example.intheclouds.ui.editcloud.state.EditCloudViewState
 import com.example.intheclouds.util.AbsentLiveData
 import com.example.intheclouds.util.DataState
+import com.example.intheclouds.util.NavigationExtra
 
 class EditCloudViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -44,11 +46,23 @@ class EditCloudViewModel(application: Application) : AndroidViewModel(applicatio
 
             is EditCloudStateEvent.SaveCaptionedCloud -> {
                 println("DEBUG: saving captioned cloud")
-                return cloudsRepository.insertOrUpdate(stateEvent.cloud)
+                cloudsRepository.insertOrUpdate(stateEvent.cloud)
+                return MediatorLiveData<DataState<EditCloudViewState>>().apply {
+                    value = DataState.data(
+                        message = "Cloud Saved!",
+                        navigationExtra = NavigationExtra(CaptionedCloudsFragment::class.java.simpleName)
+                    )
+                }
             }
 
             is EditCloudStateEvent.DeleteCaptionedCloud -> {
-                return cloudsRepository.delete(stateEvent.cloud)
+                cloudsRepository.delete(stateEvent.cloud)
+                return MediatorLiveData<DataState<EditCloudViewState>>().apply {
+                    value = DataState.data(
+                        message = "Cloud Deleted!",
+                        navigationExtra = NavigationExtra(CaptionedCloudsFragment::class.java.simpleName)
+                    )
+                }
             }
 
             is EditCloudStateEvent.None ->{

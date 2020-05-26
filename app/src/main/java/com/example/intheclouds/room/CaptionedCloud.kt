@@ -23,6 +23,7 @@ data class CaptionedCloud(
 
     @ColumnInfo(name="caption")
     var caption: String
+
 ) : Parcelable {
 
     override fun equals(other: Any?): Boolean {

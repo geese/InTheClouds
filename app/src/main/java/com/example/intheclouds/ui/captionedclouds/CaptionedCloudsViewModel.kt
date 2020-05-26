@@ -1,18 +1,18 @@
 package com.example.intheclouds.ui.captionedclouds
 
 import android.app.Application
+import android.os.Bundle
 import androidx.lifecycle.*
-import com.example.intheclouds.model.Cumulus
 import com.example.intheclouds.repository.CaptionedCloudRepository
-import com.example.intheclouds.repository.ChooseCloudRepository
 import com.example.intheclouds.room.CloudsDatabase
 import com.example.intheclouds.room.CaptionedCloud
 import com.example.intheclouds.ui.captionedclouds.state.CaptionedCloudStateEvent
 import com.example.intheclouds.ui.captionedclouds.state.CaptionedCloudViewState
-import com.example.intheclouds.ui.choosecloud.state.ChooseCloudStateEvent
-import com.example.intheclouds.ui.choosecloud.state.ChooseCloudViewState
+import com.example.intheclouds.ui.editcloud.EditCloudFragment
 import com.example.intheclouds.util.AbsentLiveData
+import com.example.intheclouds.util.Constants
 import com.example.intheclouds.util.DataState
+import com.example.intheclouds.util.NavigationExtra
 
 class CaptionedCloudsViewModel(application: Application): AndroidViewModel(application) {
 
@@ -40,6 +40,7 @@ class CaptionedCloudsViewModel(application: Application): AndroidViewModel(appli
 
     fun handleStateEvent(stateEvent: CaptionedCloudStateEvent): LiveData<DataState<CaptionedCloudViewState>>{
         println("DEBUG: New StateEvent detected: $stateEvent")
+        var something = EditCloudFragment::class.java
         when(stateEvent){
 
             is CaptionedCloudStateEvent.loadCloudImages -> {
@@ -50,10 +51,11 @@ class CaptionedCloudsViewModel(application: Application): AndroidViewModel(appli
 
             is CaptionedCloudStateEvent.clickCloudImage -> {
                 println("DEBUG: cloud clicked")
-
+                var extras = Bundle()
+                extras.putParcelable(Constants.ARG_CAPTIONED_CLOUD, stateEvent.cloud)
                 return MediatorLiveData<DataState<CaptionedCloudViewState>>().apply {
-                    this.value = DataState.data(
-                        data = CaptionedCloudViewState(cloudToEdit = stateEvent.cloud)
+                    value = DataState.data(
+                        navigationExtra = NavigationExtra(EditCloudFragment::class.java.simpleName, extras)
                     )
                 }
             }
