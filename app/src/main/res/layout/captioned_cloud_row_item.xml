@@ -3,7 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/displayBackgroundDark"
-    android:paddingTop="32dp"
+    android:paddingTop="20dp"
+    android:paddingBottom="32dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -21,11 +22,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Caption!"
+        android:fontFamily="@font/amita"
+        android:background="#77212121"
         android:textAlignment="center"
-        android:textColor="@android:color/holo_orange_dark"
+        android:textSize="24sp"
+        android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/captioned_cloud_image_view"
-        android:layout_marginTop="8dp"/>
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
