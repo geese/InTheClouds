@@ -1,12 +1,16 @@
 package com.example.intheclouds.repository
 
+import android.graphics.Bitmap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import com.bumptech.glide.Glide
 import com.example.intheclouds.room.CaptionedCloud
 import com.example.intheclouds.room.CloudDao
 import com.example.intheclouds.ui.captionedclouds.state.CaptionedCloudViewState
+import com.example.intheclouds.ui.main.MainActivity
 import com.example.intheclouds.util.DataState
+import com.example.intheclouds.util.toByteArray
 import kotlinx.coroutines.*
 
 // Declares the DAO as a private property in the constructor. Pass in the DAO

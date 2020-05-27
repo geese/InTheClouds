@@ -17,7 +17,9 @@ class CaptionedCloudsViewModel(application: Application): AndroidViewModel(appli
     private val cloudsRepository = CaptionedCloudRepository(
         CloudsDatabase.getDatabase(application, viewModelScope)
             .cloudDao()
-    )
+    ).also {
+        println("DEBUG:: CaptionedCloudsViewModel clouds repo created")
+    }
 
     // triggers the different actions to take
     private val _stateEvent: MutableLiveData<CaptionedCloudStateEvent> = MutableLiveData()
@@ -43,7 +45,9 @@ class CaptionedCloudsViewModel(application: Application): AndroidViewModel(appli
             is CaptionedCloudStateEvent.loadCloudImages -> {
 
                 println("DEBUG: getting cloud images")
-                return cloudsRepository.allClouds()
+                var clouds = cloudsRepository.allClouds()
+                println("DEBUG: clouds!!${(clouds.value as DataState).data}")
+                return clouds
             }
 
             is CaptionedCloudStateEvent.clickCloudImage -> {

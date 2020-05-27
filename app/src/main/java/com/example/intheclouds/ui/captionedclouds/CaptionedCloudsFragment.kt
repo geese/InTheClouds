@@ -14,6 +14,7 @@ import com.example.intheclouds.room.CaptionedCloud
 import com.example.intheclouds.ui.DataStateListener
 import com.example.intheclouds.ui.captionedclouds.state.CaptionedCloudStateEvent
 import com.example.intheclouds.ui.editcloud.EditCloudViewModel
+import com.example.intheclouds.ui.main.MainActivity
 import kotlinx.android.synthetic.main.captioned_clouds_fragment.*
 
 class CaptionedCloudsFragment : Fragment(), CaptionedCloudsRecyclerAdapter.Interaction {
@@ -49,6 +50,7 @@ class CaptionedCloudsFragment : Fragment(), CaptionedCloudsRecyclerAdapter.Inter
 
         subscribeObservers()
         initRecyclerView()
+        println("DEBUG:: about to trigger LoadCloudsEvent")
         triggerLoadCloudsEvent()
     }
 
@@ -80,6 +82,17 @@ class CaptionedCloudsFragment : Fragment(), CaptionedCloudsRecyclerAdapter.Inter
 
     private fun subscribeObservers() {
 
+        MainActivity.isSampleCloudInserted.observe(viewLifecycleOwner, Observer {
+            when (it) {
+                true -> {
+                    println("DEBUG:: SAMPLE CLOUD INSERTED")
+                    triggerLoadCloudsEvent()
+                    MainActivity.setIsSampleCloudInserted(false)
+                }
+                false -> {}
+            }
+        })
+
         viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
             println("DEBUG: DataState: $dataState")
 
@@ -94,12 +107,10 @@ class CaptionedCloudsFragment : Fragment(), CaptionedCloudsRecyclerAdapter.Inter
                         viewModel.setCloudImagesListData(clouds)
                     }
                     captionedCloudViewState.cloudToEdit?.let {
-                        // navigate to EditCloudFragment?
                         findNavController().navigate(
                             R.id.actionEditCloud,
                             EditCloudViewModel.createArguments(it)
                         )
-                        // captionedCloudsFragmentListener.onCloudClicked(it, newCloud = false)
                     }
                 }
             }

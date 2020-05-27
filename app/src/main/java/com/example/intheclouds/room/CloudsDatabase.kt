@@ -1,10 +1,15 @@
 package com.example.intheclouds.room
 
 import android.content.Context
+import android.graphics.Bitmap
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.bumptech.glide.Glide
+import com.example.intheclouds.ui.main.MainActivity
+import com.example.intheclouds.ui.main.MainActivity.Companion.mainContext
+import com.example.intheclouds.util.toByteArray
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -50,9 +55,11 @@ abstract class CloudsDatabase : RoomDatabase() {
 
         override fun onCreate(db: SupportSQLiteDatabase) {
             super.onCreate(db)
+            println("DEBUG:  ON DATABASE CREATE")
             INSTANCE?.let { database ->
                 scope.launch {
                     withContext(Dispatchers.IO) {
+                        println("DEBUG:: populate...")
                         populateDatabase(database.cloudDao())
                     }
                 }
@@ -61,14 +68,34 @@ abstract class CloudsDatabase : RoomDatabase() {
 
         suspend fun populateDatabase(cloudDao: CloudDao) {
 
+            //https://stackoverflow.com/questions/45750020/getting-bitmap-from-image-using-glide-in-android
+
+            var bitmapOne: Bitmap? = mainContext?.run {
+                Glide.with(this)
+                    .asBitmap()
+                    .load("https://pixabay.com/get/5fe1dd454f56b10ff3d8992cc62e3177143fd7e64e507440752a78d79e4ec7_640.jpg")
+                    .submit()
+                    .get()
+            }
+
+            var bitmapTwo: Bitmap? = mainContext?.run {
+                Glide.with(this)
+                    .asBitmap()
+                    .load("https://pixabay.com/get/54e8d4464a50ac14f1dc8460962931781c3edeec504c704c7c2f7ed09749c15d_640.jpg")
+                    .submit()
+                    .get()
+            }
+
             // create sample clouds
             var cloudOne = CaptionedCloud(
-                url = "https://pixabay.com/get/5ee7d4444b5ab10ff3d8992cc62e3177143fd7e64e507440752b79dd944bc6_640.jpg",
-                caption = "Sample Cloud One"
+                url = "https://pixabay.com/get/5fe1dd454f56b10ff3d8992cc62e3177143fd7e64e507440752a78d79e4ec7_640.jpg",
+                byteArray = bitmapOne?.toByteArray(),
+                caption = "Above It All"
             )
             var cloudTwo = CaptionedCloud(
-                url = "https://pixabay.com/get/54e9d5454f50a914f1dc8460962931781c3edeec504c704c7c2f7fd69e4ec35b_640.jpg",
-                caption = "Sample Cloud Two"
+                url = "https://pixabay.com/get/54e8d4464a50ac14f1dc8460962931781c3edeec504c704c7c2f7ed09749c15d_640.jpg",
+                byteArray = bitmapTwo?.toByteArray(),
+                caption = "\"Graple\""
             )
             var cloudThree = CaptionedCloud(
                 url = "https://pixabay.com/get/54e0dc424253a514f1dc8460962931781c3edeec504c704c7c2f7fd69e4ec35b_640.jpg",
@@ -80,11 +107,14 @@ abstract class CloudsDatabase : RoomDatabase() {
             )
 
             // first delete any content
-            cloudDao.deleteAll()
+            //cloudDao.deleteAll()
 
             // add sample clouds
-            /*cloudDao.insert(cloudOne)
+            println("DEBUG:: inserting a sample cloud")
+            cloudDao.insert(cloudOne)
             cloudDao.insert(cloudTwo)
+            MainActivity.setIsSampleCloudInserted(true)
+            /*cloudDao.insert(cloudTwo)
             cloudDao.insert(cloudThree)
             cloudDao.insert(cloudFour)*/
         }
