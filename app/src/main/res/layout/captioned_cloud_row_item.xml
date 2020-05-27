@@ -8,12 +8,18 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="#55FFFFFF"/>
     <ImageView
         android:id="@+id/captioned_cloud_image_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="1dp"
         android:layout_gravity="center"
         android:scaleType="fitXY" />
 
@@ -23,12 +29,18 @@
         android:layout_height="wrap_content"
         android:text="Caption!"
         android:fontFamily="@font/amita"
-        android:background="#491a237e"
+        android:background="#511a237e"
         android:textAlignment="center"
         android:textSize="24sp"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         />
+    <View
+        android:layout_marginTop="1dp"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="#55FFFFFF"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
