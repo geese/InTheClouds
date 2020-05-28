@@ -22,11 +22,19 @@ class ChooseCloudFragment : Fragment(), ChooseCloudsRecyclerAdapter.Interaction 
         triggerCloudClickedEvent(cloud)
     }
 
-    lateinit var viewModel: ChooseCloudViewModel
+    lateinit var chooseCloudsRecyclerAdapter: ChooseCloudsRecyclerAdapter
 
+    lateinit var viewModel: ChooseCloudViewModel
     lateinit var dataStateHandler: DataStateListener
 
-    lateinit var chooseCloudsRecyclerAdapter: ChooseCloudsRecyclerAdapter
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        try {
+            dataStateHandler = context as DataStateListener
+        } catch (e: ClassCastException) {
+            println("DEBUG: ${e.message}")
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,14 +45,14 @@ class ChooseCloudFragment : Fragment(), ChooseCloudsRecyclerAdapter.Interaction 
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
+        setHasOptionsMenu(true)
         requireActivity().title = "Choose A Cloud"
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         viewModel = activity?.run {
             ViewModelProvider(this).get(ChooseCloudViewModel::class.java)
         }?: throw Exception("Invalid Activity")
-
-        cloudsRecyclerView.layoutManager = LinearLayoutManager(context)
 
         subscribeObservers()
         initRecyclerView()
@@ -54,9 +62,17 @@ class ChooseCloudFragment : Fragment(), ChooseCloudsRecyclerAdapter.Interaction 
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setHasOptionsMenu(true)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.choose_cloud_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.action_get_clouds -> triggerLoadCloudsEvent()
+            android.R.id.home -> requireActivity().supportFragmentManager.popBackStackImmediate()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun initRecyclerView() {
@@ -105,32 +121,10 @@ class ChooseCloudFragment : Fragment(), ChooseCloudsRecyclerAdapter.Interaction 
     }
 
     fun triggerLoadCloudsEvent() {
-        viewModel.setStateEvent(ChooseCloudStateEvent.loadCloudImages())
+        viewModel.setStateEvent(ChooseCloudStateEvent.LoadCloudImages)
     }
 
     fun triggerCloudClickedEvent(cloud: CaptionedCloud) {
-        viewModel.setStateEvent(ChooseCloudStateEvent.clickCloudImage(cloud))
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.choose_cloud_menu, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
-            R.id.action_get_clouds -> triggerLoadCloudsEvent()
-            android.R.id.home -> requireActivity().supportFragmentManager.popBackStackImmediate()
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        try {
-            dataStateHandler = context as DataStateListener
-        } catch (e: ClassCastException) {
-            println("DEBUG: ${e.message}")
-        }
+        viewModel.setStateEvent(ChooseCloudStateEvent.ClickCloudImage(cloud))
     }
 }

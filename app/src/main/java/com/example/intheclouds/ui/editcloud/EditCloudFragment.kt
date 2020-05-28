@@ -22,7 +22,6 @@ import kotlinx.android.synthetic.main.edit_cloud_fragment.*
 class EditCloudFragment : Fragment() {
 
     private lateinit var viewModel: EditCloudViewModel
-
     lateinit var dataStateHandler: DataStateListener
 
     private lateinit var captionedCloud: CaptionedCloud
@@ -40,11 +39,6 @@ class EditCloudFragment : Fragment() {
         isNewCloud = captionedCloud.id == 0L
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -52,25 +46,10 @@ class EditCloudFragment : Fragment() {
         return inflater.inflate(R.layout.edit_cloud_fragment, container, false)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        if (!isNewCloud) {
-            inflater.inflate(R.menu.edit_cloud_menu, menu)
-        }
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
-            R.id.action_delete_cloud -> {
-                triggerDeleteCaptionedCloudEvent()
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        setHasOptionsMenu(true)
         requireActivity().title = "Edit Cloud Caption"
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -102,6 +81,22 @@ class EditCloudFragment : Fragment() {
                 }
             }
         })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        if (!isNewCloud) {
+            inflater.inflate(R.menu.edit_cloud_menu, menu)
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.action_delete_cloud -> {
+                triggerDeleteCaptionedCloudEvent()
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     fun subscribeObservers() {

@@ -1,16 +1,13 @@
 package com.example.intheclouds.room
 
 import android.content.Context
-import android.graphics.Bitmap
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.bumptech.glide.Glide
 import com.example.intheclouds.ui.main.MainActivity
 import com.example.intheclouds.ui.main.MainActivity.Companion.mainContext
 import com.example.intheclouds.util.getSampleByteArrays
-import com.example.intheclouds.util.toByteArray
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -71,6 +68,7 @@ abstract class CloudsDatabase : RoomDatabase() {
 
             mainContext?.let {
 
+                // read sample images out of raw folder
                 var samples = getSampleByteArrays(it)
 
                 // create sample clouds

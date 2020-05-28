@@ -24,7 +24,10 @@ abstract class NetworkBoundResource<ResponseObject, ViewStateType> {
             // delay(TESTING_NETWORK_DELAY)
 
             withContext(Main) {
+
+                // apiResponse will be an ApiSuccessResponse, ApiErrorResponse, or ApiEmptyResponse
                 val apiResponse = createCall()
+
                 result.addSource(apiResponse) { response ->
 
                     // remove the source now that we have the response

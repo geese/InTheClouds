@@ -1,6 +1,5 @@
 package com.example.intheclouds.room
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 
 @Dao

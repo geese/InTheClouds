@@ -1,16 +1,11 @@
 package com.example.intheclouds.repository
 
-import android.graphics.Bitmap
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import com.bumptech.glide.Glide
 import com.example.intheclouds.room.CaptionedCloud
 import com.example.intheclouds.room.CloudDao
 import com.example.intheclouds.ui.captionedclouds.state.CaptionedCloudViewState
-import com.example.intheclouds.ui.main.MainActivity
 import com.example.intheclouds.util.DataState
-import com.example.intheclouds.util.toByteArray
 import kotlinx.coroutines.*
 
 // Declares the DAO as a private property in the constructor. Pass in the DAO
@@ -19,10 +14,11 @@ class CaptionedCloudRepository(private val cloudDao: CloudDao) {
 
     fun allClouds(): LiveData<DataState<CaptionedCloudViewState>> {
 
+        // todo: I am new to coroutines and don't know if "runBlocking" is the best thing to do here
         val allClouds = runBlocking(Dispatchers.IO) {
             cloudDao.getAll()
         }
-        return MediatorLiveData<DataState<CaptionedCloudViewState>>().apply {
+        return MutableLiveData<DataState<CaptionedCloudViewState>>().apply {
             value = DataState.data(
                 data = CaptionedCloudViewState(
                     clouds = allClouds
@@ -47,6 +43,8 @@ class CaptionedCloudRepository(private val cloudDao: CloudDao) {
         }
     }
 
+    // todo: I am new to coroutines and don't know if "runBlocking" is the best thing to do here
+
     fun insert(cloud: CaptionedCloud) : Long {
         return runBlocking(Dispatchers.IO) {
             cloudDao.insert(cloud)
@@ -58,5 +56,4 @@ class CaptionedCloudRepository(private val cloudDao: CloudDao) {
             cloudDao.update(cloud)
         }
     }
-
 }

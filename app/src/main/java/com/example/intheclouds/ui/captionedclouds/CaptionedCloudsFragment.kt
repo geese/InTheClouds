@@ -3,7 +3,6 @@ package com.example.intheclouds.ui.captionedclouds
 import android.content.Context
 import android.os.Bundle
 import android.view.*
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -23,11 +22,19 @@ class CaptionedCloudsFragment : Fragment(), CaptionedCloudsRecyclerAdapter.Inter
         triggerCloudClickedEvent(cloud)
     }
 
-    private lateinit var viewModel: CaptionedCloudsViewModel
+    private lateinit var captionedCloudsRecyclerAdapter: CaptionedCloudsRecyclerAdapter
 
+    private lateinit var viewModel: CaptionedCloudsViewModel
     lateinit var dataStateHandler: DataStateListener
 
-    private lateinit var captionedCloudsRecyclerAdapter: CaptionedCloudsRecyclerAdapter
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        try {
+            dataStateHandler = context as DataStateListener
+        } catch (e: ClassCastException) {
+            println("DEBUG: ${e.message}")
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,33 +46,18 @@ class CaptionedCloudsFragment : Fragment(), CaptionedCloudsRecyclerAdapter.Inter
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        setHasOptionsMenu(true)
         requireActivity().title = "In The Clouds"
-        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
 
         viewModel = activity?.run {
             ViewModelProvider(this).get(CaptionedCloudsViewModel::class.java)
         }?: throw Exception("Invalid Activity")
 
-        captionedCloudsRecyclerView.layoutManager = LinearLayoutManager(context)
-
         subscribeObservers()
         initRecyclerView()
-        println("DEBUG:: about to trigger LoadCloudsEvent")
-        triggerLoadCloudsEvent()
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        try {
-            dataStateHandler = context as DataStateListener
-        } catch (e: ClassCastException) {
-            println("DEBUG: ${e.message}")
-        }
+        triggerLoadCloudsEvent()  // TODO:  not sure I like initiating the view state this way - is it not very MVI-ish?
+                                    // todo (cont.) should the viewmodel drive the initial state?
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -80,18 +72,15 @@ class CaptionedCloudsFragment : Fragment(), CaptionedCloudsRecyclerAdapter.Inter
         return super.onOptionsItemSelected(item)
     }
 
-    private fun subscribeObservers() {
+    private fun initRecyclerView() {
+        captionedCloudsRecyclerView.apply {
+            layoutManager = LinearLayoutManager(activity)
+            captionedCloudsRecyclerAdapter = CaptionedCloudsRecyclerAdapter(this@CaptionedCloudsFragment)
+            adapter = captionedCloudsRecyclerAdapter
+        }
+    }
 
-        MainActivity.isSampleCloudInserted.observe(viewLifecycleOwner, Observer {
-            when (it) {
-                true -> {
-                    println("DEBUG:: SAMPLE CLOUD INSERTED")
-                    triggerLoadCloudsEvent()
-                    MainActivity.setIsSampleCloudInserted(false)
-                }
-                false -> {}
-            }
-        })
+    private fun subscribeObservers() {
 
         viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
             println("DEBUG: DataState: $dataState")
@@ -124,21 +113,24 @@ class CaptionedCloudsFragment : Fragment(), CaptionedCloudsRecyclerAdapter.Inter
 
         })
 
-    }
-
-    private fun initRecyclerView() {
-        captionedCloudsRecyclerView.apply {
-            layoutManager = LinearLayoutManager(activity)
-            captionedCloudsRecyclerAdapter = CaptionedCloudsRecyclerAdapter(this@CaptionedCloudsFragment)
-            adapter = captionedCloudsRecyclerAdapter
-        }
+        // should only happen once, on database creation
+        MainActivity.isSampleCloudInserted.observe(viewLifecycleOwner, Observer {
+            when (it) {
+                true -> {
+                    println("DEBUG:: SAMPLE CLOUD INSERTED")
+                    triggerLoadCloudsEvent()
+                    MainActivity.setIsSampleCloudInserted(false)
+                }
+                false -> {}
+            }
+        })
     }
 
     fun triggerLoadCloudsEvent() {
-        viewModel.setStateEvent(CaptionedCloudStateEvent.loadCloudImages())
+        viewModel.setStateEvent(CaptionedCloudStateEvent.LoadCloudImages)
     }
 
     fun triggerCloudClickedEvent(cloud: CaptionedCloud) {
-        viewModel.setStateEvent(CaptionedCloudStateEvent.clickCloudImage(cloud))
+        viewModel.setStateEvent(CaptionedCloudStateEvent.ClickCloudImage(cloud))
     }
 }

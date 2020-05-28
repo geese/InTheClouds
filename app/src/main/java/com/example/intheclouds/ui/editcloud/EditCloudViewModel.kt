@@ -43,7 +43,7 @@ class EditCloudViewModel(application: Application) : AndroidViewModel(applicatio
             is EditCloudStateEvent.SaveCaptionedCloud -> {
                 println("DEBUG: saving captioned cloud")
                 cloudsRepository.insertOrUpdate(stateEvent.cloud)
-                return MediatorLiveData<DataState<EditCloudViewState>>().apply {
+                return MutableLiveData<DataState<EditCloudViewState>>().apply {
                     value = DataState.data(
                         message = "Cloud Saved!",
                         data = EditCloudViewState(isSaved = true)
@@ -53,7 +53,7 @@ class EditCloudViewModel(application: Application) : AndroidViewModel(applicatio
 
             is EditCloudStateEvent.DeleteCaptionedCloud -> {
                 cloudsRepository.delete(stateEvent.cloud)
-                return MediatorLiveData<DataState<EditCloudViewState>>().apply {
+                return MutableLiveData<DataState<EditCloudViewState>>().apply {
                     value = DataState.data(
                         message = "Cloud Deleted!",
                         data = EditCloudViewState(isDeleted = true)

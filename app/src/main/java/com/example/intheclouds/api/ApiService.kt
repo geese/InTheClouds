@@ -12,7 +12,6 @@ interface ApiService {
     // Returning LiveData instead of Call<>
     // https://codingwithmitch.com/courses/model-view-intent-mvi-architecture/livedata-call-adapter-retrofit/
 
-
     @GET("api")
     fun getCumulusPhotos(
         @Query("key") key: String = Constants.PIXABAY_API_KEY,

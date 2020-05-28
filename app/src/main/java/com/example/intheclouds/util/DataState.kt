@@ -1,7 +1,5 @@
 package com.example.intheclouds.util
 
-import android.os.Bundle
-
 // this class is modeled after a class named Resource in Google samples
 
 data class DataState<T>(

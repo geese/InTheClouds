@@ -11,6 +11,8 @@ import com.example.intheclouds.R
 import com.example.intheclouds.room.CaptionedCloud
 import kotlinx.android.synthetic.main.captioned_cloud_row_item.view.*
 
+// modelled after Coding With Mitch MVI course
+
 class CaptionedCloudsRecyclerAdapter(private val interaction: Interaction? = null) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 

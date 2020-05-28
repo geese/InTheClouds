@@ -1,13 +1,14 @@
 package com.example.intheclouds.ui.choosecloud
 
-import android.os.Bundle
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
+import androidx.lifecycle.ViewModel
 import com.example.intheclouds.model.Pixabay
 import com.example.intheclouds.repository.ChooseCloudRepository
 import com.example.intheclouds.ui.choosecloud.state.ChooseCloudStateEvent
 import com.example.intheclouds.ui.choosecloud.state.ChooseCloudViewState
 import com.example.intheclouds.util.AbsentLiveData
-import com.example.intheclouds.util.Constants
 import com.example.intheclouds.util.DataState
 
 class ChooseCloudViewModel : ViewModel() {
@@ -33,16 +34,12 @@ class ChooseCloudViewModel : ViewModel() {
         println("DEBUG: New StateEvent detected: $stateEvent")
         when(stateEvent){
 
-            is ChooseCloudStateEvent.loadCloudImages -> {
-                println("DEBUG: getting cloud images")
+            is ChooseCloudStateEvent.LoadCloudImages -> {
                 return ChooseCloudRepository.getCloudImages()
             }
 
-            is ChooseCloudStateEvent.clickCloudImage -> {
-                println("DEBUG: cloud clicked")
-                var extras = Bundle()
-                extras.putParcelable(Constants.ARG_CAPTIONED_CLOUD, stateEvent.cloud)
-                return MediatorLiveData<DataState<ChooseCloudViewState>>().apply {
+            is ChooseCloudStateEvent.ClickCloudImage -> {
+                return MutableLiveData<DataState<ChooseCloudViewState>>().apply {
                     value = DataState.data(
                         data = ChooseCloudViewState(cloudToEdit = stateEvent.cloud)
                     )
@@ -70,5 +67,4 @@ class ChooseCloudViewModel : ViewModel() {
     fun setStateEvent(event: ChooseCloudStateEvent) {
         _stateEvent.value = event
     }
-
 }

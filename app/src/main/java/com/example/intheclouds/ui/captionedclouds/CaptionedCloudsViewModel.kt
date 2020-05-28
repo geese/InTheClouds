@@ -1,15 +1,13 @@
 package com.example.intheclouds.ui.captionedclouds
 
 import android.app.Application
-import android.os.Bundle
 import androidx.lifecycle.*
 import com.example.intheclouds.repository.CaptionedCloudRepository
-import com.example.intheclouds.room.CloudsDatabase
 import com.example.intheclouds.room.CaptionedCloud
+import com.example.intheclouds.room.CloudsDatabase
 import com.example.intheclouds.ui.captionedclouds.state.CaptionedCloudStateEvent
 import com.example.intheclouds.ui.captionedclouds.state.CaptionedCloudViewState
 import com.example.intheclouds.util.AbsentLiveData
-import com.example.intheclouds.util.Constants
 import com.example.intheclouds.util.DataState
 
 class CaptionedCloudsViewModel(application: Application): AndroidViewModel(application) {
@@ -17,9 +15,7 @@ class CaptionedCloudsViewModel(application: Application): AndroidViewModel(appli
     private val cloudsRepository = CaptionedCloudRepository(
         CloudsDatabase.getDatabase(application, viewModelScope)
             .cloudDao()
-    ).also {
-        println("DEBUG:: CaptionedCloudsViewModel clouds repo created")
-    }
+    )
 
     // triggers the different actions to take
     private val _stateEvent: MutableLiveData<CaptionedCloudStateEvent> = MutableLiveData()
@@ -42,19 +38,12 @@ class CaptionedCloudsViewModel(application: Application): AndroidViewModel(appli
         println("DEBUG: New StateEvent detected: $stateEvent")
         when(stateEvent){
 
-            is CaptionedCloudStateEvent.loadCloudImages -> {
-
-                println("DEBUG: getting cloud images")
-                var clouds = cloudsRepository.allClouds()
-                println("DEBUG: clouds!!${(clouds.value as DataState).data}")
-                return clouds
+            is CaptionedCloudStateEvent.LoadCloudImages -> {
+                return cloudsRepository.allClouds()
             }
 
-            is CaptionedCloudStateEvent.clickCloudImage -> {
-                println("DEBUG: cloud clicked")
-                var extras = Bundle()
-                extras.putParcelable(Constants.ARG_CAPTIONED_CLOUD, stateEvent.cloud)
-                return MediatorLiveData<DataState<CaptionedCloudViewState>>().apply {
+            is CaptionedCloudStateEvent.ClickCloudImage -> {
+                return MutableLiveData<DataState<CaptionedCloudViewState>>().apply {
                     value = DataState.data(
                         data = CaptionedCloudViewState(cloudToEdit = stateEvent.cloud)
                     )
@@ -82,5 +71,4 @@ class CaptionedCloudsViewModel(application: Application): AndroidViewModel(appli
     fun setStateEvent(event: CaptionedCloudStateEvent) {
         _stateEvent.value = event
     }
-
 }
