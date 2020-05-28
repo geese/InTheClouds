@@ -10,17 +10,32 @@ object ChooseCloudRepository {
 
     fun getCloudImages(): LiveData<DataState<ChooseCloudViewState>> {
 
-        return object : NetworkBoundResource<Pixabay.Response, ChooseCloudViewState>() {
+
+       return object: NetworkBoundResource<Pixabay.Response, ChooseCloudViewState>() {
+
+           var pageNumber = 1
+           var clouds = ArrayList<Pixabay.CloudImage>()
+
+
             override fun handleApiSuccessResponse(response: ApiSuccessResponse<Pixabay.Response>) {
-                result.value = DataState.data(
-                    data = ChooseCloudViewState(
-                        cloudImages = response.body.cloudImages as ArrayList<Pixabay.CloudImage>
-                    )
-                )
+                clouds.addAll(response.body.cloudImages as ArrayList<Pixabay.CloudImage>)
+                response.body.totalHits?.let {
+                    when (it > clouds.size) {
+                        true -> this.doCall()
+                        else -> {
+                            println("DEBUG:  HOW MANY CLOUDS????  ${clouds.size}")
+                            result.value = DataState.data(
+                                data = ChooseCloudViewState(
+                                    cloudImages = clouds
+                                )
+                            )
+                        }
+                    }
+                }
             }
 
             override fun createCall(): LiveData<GenericApiResponse<Pixabay.Response>> {
-                return RetrofitBuilder.apiService.getCumulusPhotos()
+                return RetrofitBuilder.apiService.getCumulusPhotos(page=pageNumber++)
             }
         }.asLiveData()
     }

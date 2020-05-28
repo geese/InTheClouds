@@ -68,7 +68,7 @@ class CaptionedCloudsRecyclerAdapter(private val interaction: Interaction? = nul
             }
 
             Glide.with(itemView.context)  // use url as backup
-                .load(item.byteArray ?: item.url)
+                .load(item.byteArray)
                 .into(itemView.captioned_cloud_image_view)
 
             itemView.caption_text_view.text = item.caption

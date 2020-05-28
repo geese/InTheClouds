@@ -16,12 +16,14 @@ abstract class NetworkBoundResource<ResponseObject, ViewStateType> {
 
     init {
         result.value = DataState.loading(true)
+        doCall()
+    }
 
-
-        GlobalScope.launch(IO){
+    protected fun doCall() {
+        GlobalScope.launch(IO) {
             // delay(TESTING_NETWORK_DELAY)
 
-            withContext(Main){
+            withContext(Main) {
                 val apiResponse = createCall()
                 result.addSource(apiResponse) { response ->
 

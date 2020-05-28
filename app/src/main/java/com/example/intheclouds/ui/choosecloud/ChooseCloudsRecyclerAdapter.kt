@@ -81,7 +81,7 @@ class ChooseCloudsRecyclerAdapter(private val interaction: Interaction? = null) 
             }
 
             Glide.with(itemView.context)
-                .load(item.url)
+                .load(item.url?.replace("640", "340"))
                 .into(itemView.choose_cloud_image_view)
         }
     }

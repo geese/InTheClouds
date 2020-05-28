@@ -16,8 +16,9 @@ interface ApiService {
     @GET("api")
     fun getCumulusPhotos(
         @Query("key") key: String = Constants.PIXABAY_API_KEY,
-        @Query("q") q: String = "fluffy+clouds",
+        @Query("q") q: String = "fluffy+cloud",
         @Query("image_type") imageType: String = "photo",
+        @Query("page") page: Int = 1,
         @Query("per_page") perPage: Int = 200
     ): LiveData<GenericApiResponse<Pixabay.Response>>
 }

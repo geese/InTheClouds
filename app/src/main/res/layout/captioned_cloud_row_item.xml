@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/displayBackgroundDark"
     android:paddingTop="20dp"
-    android:paddingBottom="28dp"
+    android:paddingBottom="16dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         app:layout_constraintTop_toTopOf="parent"
-        android:background="#55FFFFFF"/>
+        android:background="#88FFFFFF"/>
     <ImageView
         android:id="@+id/captioned_cloud_image_view"
         android:layout_width="match_parent"
@@ -40,7 +40,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:background="#55FFFFFF"/>
+        android:background="#88FFFFFF"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
