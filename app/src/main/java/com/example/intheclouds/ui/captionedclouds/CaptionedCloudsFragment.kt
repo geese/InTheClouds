@@ -3,6 +3,7 @@ package com.example.intheclouds.ui.captionedclouds
 import android.content.Context
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -46,6 +47,7 @@ class CaptionedCloudsFragment : Fragment(), CaptionedCloudsRecyclerAdapter.Inter
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         setHasOptionsMenu(true)
         requireActivity().title = "In The Clouds"
 
