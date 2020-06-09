@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.view.*
 import android.view.inputmethod.EditorInfo
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -18,11 +17,12 @@ import com.example.intheclouds.ui.editcloud.state.EditCloudStateEvent
 import com.example.intheclouds.ui.editcloud.state.EditCloudStateEvent.SaveCaptionedCloud
 import com.example.intheclouds.util.Constants
 import kotlinx.android.synthetic.main.edit_cloud_fragment.*
+import timber.log.Timber.d
 
 class EditCloudFragment : Fragment() {
 
     private lateinit var viewModel: EditCloudViewModel
-    lateinit var dataStateHandler: DataStateListener
+    private lateinit var dataStateHandler: DataStateListener
 
     private lateinit var captionedCloud: CaptionedCloud
     private var isNewCloud: Boolean = false
@@ -32,10 +32,11 @@ class EditCloudFragment : Fragment() {
         try {
             dataStateHandler = context as DataStateListener
         } catch (e: ClassCastException) {
-            println("DEBUG: ${e.message}")
+            d("DEBUG: ${e.message}")
         }
 
-        arguments?.getParcelable<CaptionedCloud>(Constants.ARG_CAPTIONED_CLOUD)?.let { captionedCloud = it }
+        arguments?.getParcelable<CaptionedCloud>(Constants.ARG_CAPTIONED_CLOUD)
+            ?.let { captionedCloud = it }
         isNewCloud = captionedCloud.id == 0L
     }
 
@@ -55,7 +56,7 @@ class EditCloudFragment : Fragment() {
 
         viewModel = activity?.run {
             ViewModelProvider(this).get(EditCloudViewModel::class.java)
-        }?: throw Exception("Invalid Activity")
+        } ?: throw Exception("Invalid Activity")
 
         Glide.with(this)
             .asBitmap()
@@ -70,17 +71,15 @@ class EditCloudFragment : Fragment() {
             triggerSaveCaptionedCloudEvent()
         }
 
-        editText.setOnEditorActionListener(object: TextView.OnEditorActionListener {
-            override fun onEditorAction(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
-                return when {
-                    actionId == EditorInfo.IME_ACTION_DONE -> {
-                        triggerSaveCaptionedCloudEvent()
-                        true
-                    }
-                    else -> false
+        editText.setOnEditorActionListener { v, actionId, event ->
+            when (actionId) {
+                EditorInfo.IME_ACTION_DONE -> {
+                    triggerSaveCaptionedCloudEvent()
+                    true
                 }
+                else -> false
             }
-        })
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -91,7 +90,7 @@ class EditCloudFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
+        when (item.itemId) {
             R.id.action_delete_cloud -> {
                 triggerDeleteCaptionedCloudEvent()
             }
@@ -99,17 +98,17 @@ class EditCloudFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    fun subscribeObservers() {
+    private fun subscribeObservers() {
 
         viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
-            println("DEBUG: DataState: $dataState")
+            d("DEBUG: DataState: $dataState")
 
             // dataStateHandler is the MainActivity implementing DataStateListener
             // to handle loading (progress bar) or error (showing message)
             dataStateHandler.onDataStateChange(dataState)
 
             // Handle Data<T>
-            dataState.data?.let { event->
+            dataState.data?.let { event ->
                 event.getContentIfNotHandled()?.let { editCloudViewState ->
                     with(editCloudViewState) {
                         when {

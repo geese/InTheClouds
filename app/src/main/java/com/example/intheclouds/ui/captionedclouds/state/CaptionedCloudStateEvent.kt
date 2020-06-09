@@ -4,9 +4,9 @@ import com.example.intheclouds.room.CaptionedCloud
 
 sealed class CaptionedCloudStateEvent {
 
-    object LoadCloudImages: CaptionedCloudStateEvent()
+    object LoadCloudImages : CaptionedCloudStateEvent()
 
-    data class ClickCloudImage(val cloud: CaptionedCloud): CaptionedCloudStateEvent()
+    data class ClickCloudImage(val cloud: CaptionedCloud) : CaptionedCloudStateEvent()
 
-    object None: CaptionedCloudStateEvent()
+    object None : CaptionedCloudStateEvent()
 }

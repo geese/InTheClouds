@@ -10,17 +10,17 @@ import kotlinx.android.parcel.Parcelize
 @Entity(tableName = "captioned_cloud")
 data class CaptionedCloud(
 
-    @ColumnInfo(name="id")
+    @ColumnInfo(name = "id")
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0,
 
-    @ColumnInfo(name="url")
+    @ColumnInfo(name = "url")
     var url: String,
 
-    @ColumnInfo(name="image_byte_array", typeAffinity = ColumnInfo.BLOB)
+    @ColumnInfo(name = "image_byte_array", typeAffinity = ColumnInfo.BLOB)
     var byteArray: ByteArray? = null,
 
-    @ColumnInfo(name="caption")
+    @ColumnInfo(name = "caption")
     var caption: String
 
 ) : Parcelable {

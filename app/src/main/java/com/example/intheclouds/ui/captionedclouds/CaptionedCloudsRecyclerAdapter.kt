@@ -14,9 +14,9 @@ import kotlinx.android.synthetic.main.captioned_cloud_row_item.view.*
 // modelled after Coding With Mitch MVI course
 
 class CaptionedCloudsRecyclerAdapter(private val interaction: Interaction? = null) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    val DIFF_CALLBACK = object : DiffUtil.ItemCallback<CaptionedCloud>() {
+    private val diffCallback = object : DiffUtil.ItemCallback<CaptionedCloud>() {
 
         override fun areItemsTheSame(oldItem: CaptionedCloud, newItem: CaptionedCloud): Boolean {
             return oldItem.id == newItem.id
@@ -27,7 +27,7 @@ class CaptionedCloudsRecyclerAdapter(private val interaction: Interaction? = nul
         }
     }
 
-    private val differ = AsyncListDiffer(this, DIFF_CALLBACK)
+    private val differ = AsyncListDiffer(this, diffCallback)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
@@ -45,7 +45,7 @@ class CaptionedCloudsRecyclerAdapter(private val interaction: Interaction? = nul
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is CloudImageViewHolder -> {
-                holder.bind(differ.currentList.get(position))
+                holder.bind(differ.currentList[position])
             }
         }
     }
@@ -65,7 +65,7 @@ class CaptionedCloudsRecyclerAdapter(private val interaction: Interaction? = nul
     ) : RecyclerView.ViewHolder(itemView) {
 
         fun bind(item: CaptionedCloud) = with(itemView) {
-            this.setOnClickListener{
+            this.setOnClickListener {
                 interaction?.onItemSelected(item)
             }
 

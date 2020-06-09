@@ -16,20 +16,26 @@ import com.example.intheclouds.util.toByteArray
 import kotlinx.android.synthetic.main.cloud_row_item.view.*
 
 class ChooseCloudsRecyclerAdapter(private val interaction: Interaction? = null) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Pixabay.CloudImage>() {
+    private val diffCallback = object : DiffUtil.ItemCallback<Pixabay.CloudImage>() {
 
-        override fun areItemsTheSame(oldItem: Pixabay.CloudImage, newItem: Pixabay.CloudImage): Boolean {
+        override fun areItemsTheSame(
+            oldItem: Pixabay.CloudImage,
+            newItem: Pixabay.CloudImage
+        ): Boolean {
             return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: Pixabay.CloudImage, newItem: Pixabay.CloudImage): Boolean {
+        override fun areContentsTheSame(
+            oldItem: Pixabay.CloudImage,
+            newItem: Pixabay.CloudImage
+        ): Boolean {
             return oldItem == newItem
         }
     }
 
-    private val differ = AsyncListDiffer(this, DIFF_CALLBACK)
+    private val differ = AsyncListDiffer(this, diffCallback)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
@@ -47,7 +53,7 @@ class ChooseCloudsRecyclerAdapter(private val interaction: Interaction? = null) 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is CloudImageViewHolder -> {
-                holder.bind(differ.currentList.get(position))
+                holder.bind(differ.currentList[position])
             }
         }
     }
@@ -67,8 +73,8 @@ class ChooseCloudsRecyclerAdapter(private val interaction: Interaction? = null) 
     ) : RecyclerView.ViewHolder(itemView) {
 
         fun bind(item: Pixabay.CloudImage) = with(itemView) {
-            this.setOnClickListener{
-                var bitmap = ((itemView.findViewById(R.id.choose_cloud_image_view) as ImageView)
+            this.setOnClickListener {
+                val bitmap = ((itemView.findViewById(R.id.choose_cloud_image_view) as ImageView)
                     .drawable as BitmapDrawable)
                     .bitmap
                 interaction?.onItemSelected(

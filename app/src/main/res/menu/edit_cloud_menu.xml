@@ -5,7 +5,7 @@
 
     <item
         android:id="@+id/action_delete_cloud"
-        android:title="Delete Cloud"
+        android:title="@string/delete_cloud"
         app:showAsAction="never"
         android:icon="@drawable/ic_delete_white_24dp"
         />

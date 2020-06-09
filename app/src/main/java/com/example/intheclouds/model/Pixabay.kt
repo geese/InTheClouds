@@ -13,8 +13,8 @@ object Pixabay {
         @Expose
         @SerializedName("hits")
         val cloudImages: List<CloudImage>
-
     )
+
     data class CloudImage(
 
         @Expose
