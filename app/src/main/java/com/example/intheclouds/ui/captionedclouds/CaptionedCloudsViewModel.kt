@@ -9,8 +9,9 @@ import com.example.intheclouds.ui.captionedclouds.state.CaptionedCloudStateEvent
 import com.example.intheclouds.ui.captionedclouds.state.CaptionedCloudViewState
 import com.example.intheclouds.util.AbsentLiveData
 import com.example.intheclouds.util.DataState
+import timber.log.Timber.d
 
-class CaptionedCloudsViewModel(application: Application): AndroidViewModel(application) {
+class CaptionedCloudsViewModel(application: Application) : AndroidViewModel(application) {
 
     private val cloudsRepository = CaptionedCloudRepository(
         CloudsDatabase.getDatabase(application, viewModelScope)
@@ -28,15 +29,15 @@ class CaptionedCloudsViewModel(application: Application): AndroidViewModel(appli
 
     // listen to state events - when one is detected, handle it and return LiveData accordingly
     val dataState: LiveData<DataState<CaptionedCloudViewState>> = Transformations
-        .switchMap(_stateEvent){ stateEvent ->
+        .switchMap(_stateEvent) { stateEvent ->
             stateEvent?.let {
                 handleStateEvent(stateEvent)
             }
         }
 
-    fun handleStateEvent(stateEvent: CaptionedCloudStateEvent): LiveData<DataState<CaptionedCloudViewState>>{
-        println("DEBUG: New StateEvent detected: $stateEvent")
-        when(stateEvent){
+    private fun handleStateEvent(stateEvent: CaptionedCloudStateEvent): LiveData<DataState<CaptionedCloudViewState>> {
+        d("DEBUG: New StateEvent detected: $stateEvent")
+        when (stateEvent) {
 
             is CaptionedCloudStateEvent.LoadCloudImages -> {
                 return cloudsRepository.allClouds()
@@ -50,7 +51,7 @@ class CaptionedCloudsViewModel(application: Application): AndroidViewModel(appli
                 }
             }
 
-            is CaptionedCloudStateEvent.None ->{
+            is CaptionedCloudStateEvent.None -> {
                 return AbsentLiveData.create()
             }
         }
@@ -62,7 +63,7 @@ class CaptionedCloudsViewModel(application: Application): AndroidViewModel(appli
         _viewState.value = update
     }
 
-    fun getCurrentViewStateOrNew(): CaptionedCloudViewState {
+    private fun getCurrentViewStateOrNew(): CaptionedCloudViewState {
         return viewState.value?.run {
             this
         } ?: CaptionedCloudViewState()

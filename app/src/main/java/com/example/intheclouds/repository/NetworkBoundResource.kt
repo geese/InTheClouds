@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber.d
 
 abstract class NetworkBoundResource<ResponseObject, ViewStateType> {
 
@@ -39,24 +40,24 @@ abstract class NetworkBoundResource<ResponseObject, ViewStateType> {
         }
     }
 
-    fun handleNetworkCall(response: GenericApiResponse<ResponseObject>){
+    private fun handleNetworkCall(response: GenericApiResponse<ResponseObject>) {
 
-        when(response){
-            is ApiSuccessResponse ->{
+        when (response) {
+            is ApiSuccessResponse -> {
                 handleApiSuccessResponse(response)
             }
-            is ApiErrorResponse ->{
-                println("DEBUG: NetworkBoundResource: ${response.errorMessage}")
+            is ApiErrorResponse -> {
+                d("DEBUG: NetworkBoundResource: ${response.errorMessage}")
                 onReturnError(response.errorMessage)
             }
-            is ApiEmptyResponse ->{
-                println("DEBUG: NetworkBoundResource: Request returned NOTHING (HTTP 204)")
+            is ApiEmptyResponse -> {
+                d("DEBUG: NetworkBoundResource: Request returned NOTHING (HTTP 204)")
                 onReturnError("HTTP 204. Returned NOTHING.")
             }
         }
     }
 
-    fun onReturnError(message: String){
+    private fun onReturnError(message: String) {
         result.value = DataState.error(message)
     }
 

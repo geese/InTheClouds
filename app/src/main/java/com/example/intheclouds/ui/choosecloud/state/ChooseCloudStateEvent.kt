@@ -4,10 +4,10 @@ import com.example.intheclouds.room.CaptionedCloud
 
 sealed class ChooseCloudStateEvent {
 
-    object LoadCloudImages: ChooseCloudStateEvent()
+    object LoadCloudImages : ChooseCloudStateEvent()
 
-    data class ClickCloudImage(val cloud: CaptionedCloud): ChooseCloudStateEvent()
+    data class ClickCloudImage(val cloud: CaptionedCloud) : ChooseCloudStateEvent()
 
-    object None: ChooseCloudStateEvent()
+    object None : ChooseCloudStateEvent()
 
 }

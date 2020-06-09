@@ -2,6 +2,13 @@
     <string name="app_name">In The Clouds</string>
     <string name="action_settings">Settings</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="caption">Caption!</string>
+    <string name="captioned_cloud">Captioned Cloud</string>
+    <string name="choose_cloud">Choose Cloud</string>
+    <string name="edit_cloud">Edit Cloud</string>
+    <string name="your_caption_here">Your Caption Here</string>
+    <string name="save">Save</string>
+    <string name="add_a_cloud">Add a Cloud</string>
+    <string name="reload_clouds">Reload Clouds</string>
+    <string name="delete_cloud">Delete Cloud</string>
 </resources>

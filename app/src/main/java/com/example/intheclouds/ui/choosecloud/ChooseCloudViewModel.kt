@@ -10,6 +10,7 @@ import com.example.intheclouds.ui.choosecloud.state.ChooseCloudStateEvent
 import com.example.intheclouds.ui.choosecloud.state.ChooseCloudViewState
 import com.example.intheclouds.util.AbsentLiveData
 import com.example.intheclouds.util.DataState
+import timber.log.Timber.d
 
 class ChooseCloudViewModel : ViewModel() {
 
@@ -24,15 +25,15 @@ class ChooseCloudViewModel : ViewModel() {
 
     // listen to state events - when one is detected, handle it and return LiveData accordingly
     val dataState: LiveData<DataState<ChooseCloudViewState>> = Transformations
-        .switchMap(_stateEvent){ stateEvent ->
+        .switchMap(_stateEvent) { stateEvent ->
             stateEvent?.let {
                 handleStateEvent(stateEvent)
             }
         }
 
-    fun handleStateEvent(stateEvent: ChooseCloudStateEvent): LiveData<DataState<ChooseCloudViewState>>{
-        println("DEBUG: New StateEvent detected: $stateEvent")
-        when(stateEvent){
+    private fun handleStateEvent(stateEvent: ChooseCloudStateEvent): LiveData<DataState<ChooseCloudViewState>> {
+        d("DEBUG: New StateEvent detected: $stateEvent")
+        when (stateEvent) {
 
             is ChooseCloudStateEvent.LoadCloudImages -> {
                 return ChooseCloudRepository.getCloudImages()
@@ -46,7 +47,7 @@ class ChooseCloudViewModel : ViewModel() {
                 }
             }
 
-            is ChooseCloudStateEvent.None ->{
+            is ChooseCloudStateEvent.None -> {
                 return AbsentLiveData.create()
             }
         }
@@ -58,7 +59,7 @@ class ChooseCloudViewModel : ViewModel() {
         _viewState.value = update
     }
 
-    fun getCurrentViewStateOrNew(): ChooseCloudViewState {
+    private fun getCurrentViewStateOrNew(): ChooseCloudViewState {
         return viewState.value?.run {
             this
         } ?: ChooseCloudViewState()

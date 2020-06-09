@@ -6,12 +6,12 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.intheclouds.ui.main.MainActivity
-import com.example.intheclouds.ui.main.MainActivity.Companion.mainContext
 import com.example.intheclouds.util.getSampleByteArrays
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber.d
 
 @Database(entities = [(CaptionedCloud::class)], version = 1)
 abstract class CloudsDatabase : RoomDatabase() {
@@ -39,7 +39,7 @@ abstract class CloudsDatabase : RoomDatabase() {
                     CloudsDatabase::class.java,
                     "clouds-database"
                 )
-                    .addCallback(CloudsDatabaseCallback(scope))
+                    .addCallback(CloudsDatabaseCallback(context, scope))
                     .build()
                 INSTANCE = instance
                 return instance
@@ -48,48 +48,46 @@ abstract class CloudsDatabase : RoomDatabase() {
     }
 
     private class CloudsDatabaseCallback(
+        private val context: Context,
         private val scope: CoroutineScope
     ) : RoomDatabase.Callback() {
 
         override fun onCreate(db: SupportSQLiteDatabase) {
             super.onCreate(db)
-            println("DEBUG:  ON DATABASE CREATE")
+            d("DEBUG:  ON DATABASE CREATE")
             INSTANCE?.let { database ->
                 scope.launch {
                     withContext(Dispatchers.IO) {
-                        println("DEBUG:: populate...")
-                        populateDatabase(database.cloudDao())
+                        d("DEBUG:: populate...")
+                        populateDatabase(context, database.cloudDao())
                     }
                 }
             }
         }
 
-        suspend fun populateDatabase(cloudDao: CloudDao) {
+        suspend fun populateDatabase(context: Context, cloudDao: CloudDao) {
 
-            mainContext?.let {
+            // read sample images out of raw folder
+            val samples = getSampleByteArrays(context)
 
-                // read sample images out of raw folder
-                var samples = getSampleByteArrays(it)
+            // create sample clouds
+            val cloudOne = CaptionedCloud(
+                url = "",
+                byteArray = samples[0],
+                caption = "Above It All"
+            )
+            val cloudTwo = CaptionedCloud(
+                url = "",
+                byteArray = samples[1],
+                caption = "\"Graple\""
+            )
 
-                // create sample clouds
-                var cloudOne = CaptionedCloud(
-                    url = "",
-                    byteArray = samples[0],
-                    caption = "Above It All"
-                )
-                var cloudTwo = CaptionedCloud(
-                    url = "",
-                    byteArray = samples[1],
-                    caption = "\"Graple\""
-                )
+            // add sample clouds
+            d("DEBUG:: inserting sample clouds")
+            cloudDao.insert(cloudOne)
+            cloudDao.insert(cloudTwo)
 
-                // add sample clouds
-                println("DEBUG:: inserting sample clouds")
-                cloudDao.insert(cloudOne)
-                cloudDao.insert(cloudTwo)
-
-                MainActivity.setIsSampleCloudInserted(true)
-            }
+            MainActivity.setIsSampleCloudInserted(true)
         }
     }
 }

@@ -7,8 +7,8 @@ import com.example.intheclouds.R
 import java.io.ByteArrayOutputStream
 
 
-fun Bitmap.toByteArray() : ByteArray {
-    var baos = ByteArrayOutputStream()
+fun Bitmap.toByteArray(): ByteArray {
+    val baos = ByteArrayOutputStream()
     this.compress(Bitmap.CompressFormat.JPEG, 100, baos)
     return baos.toByteArray()
 }

@@ -5,9 +5,6 @@ import androidx.room.*
 @Dao
 interface CloudDao {
 
-    @Query("SELECT id FROM captioned_cloud WHERE id = :id")
-    suspend fun getCloudId(id: Long) : Int
-
     @Query("SELECT * FROM captioned_cloud")
     suspend fun getAll(): List<CaptionedCloud>
 
@@ -18,10 +15,10 @@ interface CloudDao {
     fun insertAll(vararg captionedClouds: CaptionedCloud)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(cloud: CaptionedCloud) : Long
+    suspend fun insert(cloud: CaptionedCloud): Long
 
     @Update
-    suspend fun update(cloud: CaptionedCloud) : Int
+    suspend fun update(cloud: CaptionedCloud): Int
 
     @Delete
     suspend fun delete(cloud: CaptionedCloud)

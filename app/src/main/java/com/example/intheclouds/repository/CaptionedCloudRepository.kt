@@ -7,6 +7,7 @@ import com.example.intheclouds.room.CloudDao
 import com.example.intheclouds.ui.captionedclouds.state.CaptionedCloudViewState
 import com.example.intheclouds.util.DataState
 import kotlinx.coroutines.*
+import timber.log.Timber.d
 
 // Declares the DAO as a private property in the constructor. Pass in the DAO
 // instead of the whole database, because you only need access to the DAO
@@ -27,12 +28,12 @@ class CaptionedCloudRepository(private val cloudDao: CloudDao) {
         }
     }
 
-    fun insertOrUpdate(cloud: CaptionedCloud){
+    suspend fun insertOrUpdate(cloud: CaptionedCloud) {
         var resultId = update(cloud)
         if (resultId == 0) {
             resultId = insert(cloud).toInt()
         }
-        println("DEBUG: resultId: $resultId")
+        d("DEBUG: resultId: $resultId")
     }
 
     fun delete(cloud: CaptionedCloud) {
@@ -43,17 +44,11 @@ class CaptionedCloudRepository(private val cloudDao: CloudDao) {
         }
     }
 
-    // todo: I am new to coroutines and don't know if "runBlocking" is the best thing to do here
-
-    fun insert(cloud: CaptionedCloud) : Long {
-        return runBlocking(Dispatchers.IO) {
-            cloudDao.insert(cloud)
-        }
+    private suspend fun insert(cloud: CaptionedCloud): Long {
+        return cloudDao.insert(cloud)
     }
 
-    fun update(cloud: CaptionedCloud) : Int {
-        return runBlocking(Dispatchers.IO) {
-            cloudDao.update(cloud)
-        }
+    private suspend fun update(cloud: CaptionedCloud): Int {
+        return cloudDao.update(cloud)
     }
 }

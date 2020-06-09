@@ -11,6 +11,8 @@ import com.example.intheclouds.ui.editcloud.state.EditCloudViewState
 import com.example.intheclouds.util.AbsentLiveData
 import com.example.intheclouds.util.Constants
 import com.example.intheclouds.util.DataState
+import kotlinx.coroutines.launch
+import timber.log.Timber.d
 
 class EditCloudViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -23,26 +25,28 @@ class EditCloudViewModel(application: Application) : AndroidViewModel(applicatio
     private val _stateEvent: MutableLiveData<EditCloudStateEvent> = MutableLiveData()
 
     // observing the different data models that are visible in the view
-    private val _viewState: MutableLiveData<EditCloudViewState> = MutableLiveData()
+//    private val _viewState: MutableLiveData<EditCloudViewState> = MutableLiveData()
 
-    val viewState: LiveData<EditCloudViewState>
-        get() = _viewState
+//    val viewState: LiveData<EditCloudViewState>
+//        get() = _viewState
 
     // listen to state events - when one is detected, handle it and return LiveData accordingly
     val dataState: LiveData<DataState<EditCloudViewState>> = Transformations
-        .switchMap(_stateEvent){ stateEvent ->
+        .switchMap(_stateEvent) { stateEvent ->
             stateEvent?.let {
                 handleStateEvent(stateEvent)
             }
         }
 
-    fun handleStateEvent(stateEvent: EditCloudStateEvent): LiveData<DataState<EditCloudViewState>>{
-        println("DEBUG: New StateEvent detected: $stateEvent")
-        when(stateEvent){
+    private fun handleStateEvent(stateEvent: EditCloudStateEvent): LiveData<DataState<EditCloudViewState>> {
+        d("DEBUG: New StateEvent detected: $stateEvent")
+        when (stateEvent) {
 
             is EditCloudStateEvent.SaveCaptionedCloud -> {
-                println("DEBUG: saving captioned cloud")
-                cloudsRepository.insertOrUpdate(stateEvent.cloud)
+                d("DEBUG: saving captioned cloud")
+                viewModelScope.launch {
+                    cloudsRepository.insertOrUpdate(stateEvent.cloud)
+                }
                 return MutableLiveData<DataState<EditCloudViewState>>().apply {
                     value = DataState.data(
                         message = "Cloud Saved!",
@@ -61,7 +65,7 @@ class EditCloudViewModel(application: Application) : AndroidViewModel(applicatio
                 }
             }
 
-            is EditCloudStateEvent.None ->{
+            is EditCloudStateEvent.None -> {
                 return AbsentLiveData.create()
             }
         }

@@ -5,7 +5,7 @@
 
     <item
         android:id="@+id/action_get_clouds"
-        android:title="Reload Clouds"
+        android:title="@string/reload_clouds"
         app:showAsAction="never"
         android:icon="@drawable/ic_refresh_white_24dp"
         />
